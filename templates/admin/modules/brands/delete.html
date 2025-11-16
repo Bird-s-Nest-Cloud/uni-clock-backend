@@ -1,0 +1,118 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <!-- Page Title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Delete Brand</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:brand_list' %}" class="btn btn-secondary">
+                            <i class="iconoir-arrow-left me-1"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation -->
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="card-title text-white mb-0">
+                            <i class="iconoir-warning-triangle me-1"></i> Confirm Deletion
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            {% if brand.logo %}
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" 
+                                 class="img-thumbnail mb-3" style="max-width: 150px;">
+                            {% else %}
+                            <div class="mb-3">
+                                <i class="iconoir-tag h1 text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <h5>{{ brand.name }}</h5>
+                            <p class="text-muted"><code>{{ brand.slug }}</code></p>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <h6 class="alert-heading">
+                                <i class="iconoir-warning-triangle me-1"></i> Warning
+                            </h6>
+                            <p class="mb-0">Are you sure you want to delete this brand? This action cannot be undone.</p>
+                        </div>
+
+                        {% if has_products %}
+                        <div class="alert alert-danger">
+                            <h6 class="alert-heading">
+                                <i class="iconoir-warning-triangle me-1"></i> Related Products Found
+                            </h6>
+                            <p class="mb-0">
+                                <strong>{{ products_count }}</strong> product{{ products_count|pluralize }} 
+                                {{ products_count|pluralize:"is,are" }} associated with this brand. 
+                                Deleting this brand will remove the brand association from these products.
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        <!-- Brand Details -->
+                        <div class="table-responsive mb-3">
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th width="40%">Website:</th>
+                                        <td>
+                                            {% if brand.website %}
+                                            <a href="{{ brand.website }}" target="_blank">{{ brand.website }}</a>
+                                            {% else %}
+                                            <span class="text-muted">—</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status:</th>
+                                        <td>
+                                            {% if brand.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                            <span class="badge bg-danger">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Products:</th>
+                                        <td>{{ products_count }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Created:</th>
+                                        <td>{{ brand.created_at|date:"F d, Y g:i A" }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <form method="post" class="d-inline">
+                            {% csrf_token %}
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="iconoir-trash me-1"></i> Yes, Delete Brand
+                                </button>
+                                <a href="{% url 'dashboard:brand_list' %}" class="btn btn-secondary">
+                                    <i class="iconoir-cancel me-1"></i> No, Keep Brand
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

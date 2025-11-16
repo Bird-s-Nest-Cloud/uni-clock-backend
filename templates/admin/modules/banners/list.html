@@ -1,0 +1,191 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .banner-preview {
+        width: 120px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .schedule-info {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <!-- Page Title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Homepage Banners</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:banner_add' %}" class="btn btn-primary">
+                            <i class="iconoir-plus me-1"></i> Add Banner
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Filters -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Search</label>
+                                <input type="text" name="search" class="form-control" placeholder="Search by title..." value="{{ search_query }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Status</label>
+                                <select name="is_active" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="true" {% if is_active == 'true' %}selected{% endif %}>Active</option>
+                                    <option value="false" {% if is_active == 'false' %}selected{% endif %}>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="iconoir-search me-1"></i> Filter
+                                </button>
+                                <a href="{% url 'dashboard:banner_list' %}" class="btn btn-secondary">
+                                    <i class="iconoir-refresh me-1"></i> Reset
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banners Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">All Banners ({{ banners.count }})</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Preview</th>
+                                        <th>Title</th>
+                                        <th>Linked Product</th>
+                                        <th>Display Order</th>
+                                        <th>Status</th>
+                                        <th>Schedule</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for banner in banners %}
+                                    <tr>
+                                        <td>
+                                            {% if banner.image %}
+                                            <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="banner-preview">
+                                            {% else %}
+                                            <div class="banner-preview bg-light d-flex align-items-center justify-content-center">
+                                                <i class="iconoir-image text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <strong>{{ banner.title }}</strong>
+                                            {% if banner.subtitle %}
+                                            <br><small class="text-muted">{{ banner.subtitle|truncatewords:10 }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if banner.link_product %}
+                                            <a href="{% url 'dashboard:product_edit' banner.link_product.id %}" class="text-primary">
+                                                {{ banner.link_product.name }}
+                                            </a>
+                                            {% else %}
+                                            <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ banner.display_order }}</span>
+                                        </td>
+                                        <td>
+                                            {% if banner.is_currently_active %}
+                                            <span class="badge bg-success status-badge">● Active</span>
+                                            {% elif banner.is_active %}
+                                            <span class="badge bg-warning status-badge">● Scheduled</span>
+                                            {% else %}
+                                            <span class="badge bg-danger status-badge">● Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="schedule-info">
+                                                {% if banner.start_date %}
+                                                <small>Start: {{ banner.start_date|date:"Y-m-d" }}</small><br>
+                                                {% endif %}
+                                                {% if banner.end_date %}
+                                                <small>End: {{ banner.end_date|date:"Y-m-d" }}</small>
+                                                {% endif %}
+                                                {% if not banner.start_date and not banner.end_date %}
+                                                <small class="text-muted">Always Active</small>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'dashboard:banner_edit' banner.id %}" class="btn btn-sm btn-soft-primary" title="Edit">
+                                                    <i class="iconoir-edit"></i>
+                                                </a>
+                                                <a href="{% url 'dashboard:banner_delete' banner.id %}" class="btn btn-sm btn-soft-danger" title="Delete">
+                                                    <i class="iconoir-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">
+                                            
+                                            <p class="text-muted mb-0">No banners found</p>
+                                            <a href="{% url 'dashboard:banner_add' %}" class="btn btn-primary btn-sm mt-2">
+                                                <i class="iconoir-plus me-1"></i> Add Your First Banner
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

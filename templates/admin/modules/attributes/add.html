@@ -1,0 +1,106 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Add Attribute Type</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:attribute_list' %}" class="btn btn-secondary">
+                            <i class="iconoir-arrow-left me-1"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Attribute Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">
+                                    Attribute Name <span class="text-danger">*</span>
+                                </label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.slug.id_for_label }}" class="form-label">Slug</label>
+                                {{ form.slug }}
+                                {% if form.slug.errors %}
+                                <div class="text-danger small mt-1">{{ form.slug.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Leave empty to auto-generate from name</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.display_order.id_for_label }}" class="form-label">Display Order</label>
+                                {{ form.display_order }}
+                                {% if form.display_order.errors %}
+                                <div class="text-danger small mt-1">{{ form.display_order.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Lower numbers appear first (default: 0)</div>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="iconoir-save-floppy-disk me-1"></i> Save Attribute Type
+                                </button>
+                                <a href="{% url 'dashboard:attribute_list' %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title"><i class="iconoir-info-circle me-1"></i> Examples</h4>
+                    </div>
+                    <div class="card-body">
+                        <h6>Common Attribute Types:</h6>
+                        <ul class="text-muted small">
+                            <li><strong>Color</strong> - Red, Blue, Green</li>
+                            <li><strong>Size</strong> - S, M, L, XL</li>
+                            <li><strong>Material</strong> - Cotton, Leather</li>
+                            <li><strong>Style</strong> - Modern, Classic</li>
+                        </ul>
+                        <p class="text-muted small mb-0">After creating the attribute type, you can add specific values to it.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

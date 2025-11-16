@@ -1,0 +1,266 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Edit Variant: {{ variant.sku }}</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:variant_list' product.pk %}" class="btn btn-secondary">
+                            <i class="iconoir-arrow-left me-1"></i> Back to Variants
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-lg-9">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <!-- Product Info -->
+                    <div class="card mb-3">
+                        <div class="card-body bg-light">
+                            <h6 class="mb-1">Product: {{ product.title }}</h6>
+                            <div class="text-muted small">
+                                Category: {% if product.category %}{{ product.category.name }}{% else %}None{% endif %} | 
+                                Brand: {% if product.brand %}{{ product.brand.name }}{% else %}None{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Basic Information -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Basic Information</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="{{ form.sku.id_for_label }}" class="form-label">
+                                    SKU (Stock Keeping Unit) <span class="text-danger">*</span>
+                                </label>
+                                {{ form.sku }}
+                                {% if form.sku.errors %}
+                                <div class="text-danger small mt-1">{{ form.sku.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Unique identifier for this variant</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attributes -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h4 class="card-title">Variant Attributes</h4>
+                        </div>
+                        <div class="card-body">
+                            {% if attribute_types %}
+                            <p class="text-muted mb-3">
+                                Update the attributes that define this variant
+                            </p>
+                            <div class="row">
+                                {% for attr_type in attribute_types %}
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">{{ attr_type.name }}</label>
+                                    <select name="attribute_{{ attr_type.id }}" class="form-select">
+                                        <option value="">-- Select {{ attr_type.name }} --</option>
+                                        {% for value in attr_type.values.all %}
+                                        <option value="{{ value.id }}" 
+                                                {% if value.id in current_attributes.values %}selected{% endif %}>
+                                            {{ value.value }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Current Attributes Display -->
+                            <div class="mt-3 pt-3 border-top">
+                                <h6>Current Attributes:</h6>
+                                {% if variant.attributes.all %}
+                                <div>
+                                    {% for va in variant.attributes.all %}
+                                    <span class="badge bg-primary me-1">
+                                        {{ va.attribute_value.attribute_type.name }}: {{ va.attribute_value.value }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <p class="text-muted">No attributes assigned</p>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <div class="alert alert-warning">
+                                <i class="iconoir-warning-triangle me-1"></i>
+                                No attributes configured. 
+                                <a href="{% url 'dashboard:attribute_list' %}" class="alert-link">Add attributes</a> 
+                                to organize your variants.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Pricing & Inventory -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h4 class="card-title">Pricing & Inventory</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="{{ form.price.id_for_label }}" class="form-label">
+                                            Price <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.price }}
+                                        {% if form.price.errors %}
+                                        <div class="text-danger small mt-1">{{ form.price.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="{{ form.sale_price.id_for_label }}" class="form-label">Sale Price</label>
+                                        {{ form.sale_price }}
+                                        {% if form.sale_price.errors %}
+                                        <div class="text-danger small mt-1">{{ form.sale_price.errors }}</div>
+                                        {% endif %}
+                                        <div class="form-text">Optional discounted price</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="{{ form.stock.id_for_label }}" class="form-label">
+                                            Stock <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.stock }}
+                                        {% if form.stock.errors %}
+                                        <div class="text-danger small mt-1">{{ form.stock.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Physical Attributes -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h4 class="card-title">Physical Attributes</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="{{ form.weight.id_for_label }}" class="form-label">Weight (kg)</label>
+                                {{ form.weight }}
+                                {% if form.weight.errors %}
+                                <div class="text-danger small mt-1">{{ form.weight.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Weight specific to this variant</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Active (Visible for purchase)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="mt-4 mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="iconoir-save-floppy-disk me-1"></i> Update Variant
+                        </button>
+                        <a href="{% url 'dashboard:variant_list' product.pk %}" class="btn btn-secondary btn-lg">Cancel</a>
+                        <a href="{% url 'dashboard:variant_delete' variant.pk %}" class="btn btn-danger btn-lg float-end">
+                            <i class="iconoir-trash me-1"></i> Delete
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Info Sidebar -->
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title"><i class="iconoir-info-circle me-1"></i> Variant Info</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6>SKU</h6>
+                            <p class="text-muted">{{ variant.sku }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Created</h6>
+                            <p class="text-muted">{{ variant.created_at|date:"F d, Y g:i A" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Last Updated</h6>
+                            <p class="text-muted">{{ variant.updated_at|date:"F d, Y g:i A" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Current Stock</h6>
+                            <p class="text-muted">
+                                {% if variant.stock > 0 %}
+                                    <span class="badge bg-success">{{ variant.stock }} units</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Out of Stock</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Current Price</h6>
+                            <p class="text-muted">
+                                {% if variant.sale_price %}
+                                    <span class="text-decoration-line-through">${{ variant.price }}</span><br>
+                                    <span class="text-danger fw-bold">${{ variant.sale_price }}</span>
+                                {% else %}
+                                    ${{ variant.price }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Status</h6>
+                            <p class="text-muted">
+                                {% if variant.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

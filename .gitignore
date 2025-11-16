@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+# db.sqlite3
+# media/
+# staticfiles/
+
+# VS Code
+.vscode/
+
+# Environments
+.env
+.venv/
+venv/
+ENV/
+
+# Pipenv
+Pipfile.lock
+
+# Migrations
+**/migrations/*.pyc
+**/migrations/*.pyo
+**/migrations/*.pyd
+**/migrations/__pycache__/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+htmlcov/
+.coverage
+.tox/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+
+# Pytest
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Others
+*.swp
+*.swo
+.idea/

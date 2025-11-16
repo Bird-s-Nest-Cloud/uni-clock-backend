@@ -1,0 +1,408 @@
+{
+  "categories": [
+    {
+      "name": "Mountain Bikes",
+      "slug": "mountain-bikes",
+      "description": "High-performance mountain bikes for all terrains",
+      "image": "static/assets/default-img.jpg",
+      "parent": null,
+      "display_order": 1,
+      "is_active": true,
+      "meta_title": "Mountain Bikes - Best Selection",
+      "meta_description": "Shop the best mountain bikes for your adventures"
+    },
+    {
+      "name": "Road Bikes",
+      "slug": "road-bikes", 
+      "description": "Fast and efficient road bikes for speed enthusiasts",
+      "image": "static/assets/default-img.jpg",
+      "parent": null,
+      "display_order": 2,
+      "is_active": true,
+      "meta_title": "Road Bikes - Speed & Performance",
+      "meta_description": "Premium road bikes for racing and fitness"
+    },
+    {
+      "name": "Electric Bikes",
+      "slug": "electric-bikes",
+      "description": "Modern electric bikes with advanced technology",
+      "image": "static/assets/default-img.jpg", 
+      "parent": null,
+      "display_order": 3,
+      "is_active": true,
+      "meta_title": "Electric Bikes - E-Bike Collection",
+      "meta_description": "Explore our range of electric bikes"
+    },
+    {
+      "name": "Kids Bikes",
+      "slug": "kids-bikes",
+      "description": "Safe and fun bikes designed for children",
+      "image": "static/assets/default-img.jpg",
+      "parent": null,
+      "display_order": 4,
+      "is_active": true,
+      "meta_title": "Kids Bikes - Safe & Fun",
+      "meta_description": "Quality bikes for children of all ages"
+    },
+    {
+      "name": "Full Suspension",
+      "slug": "full-suspension",
+      "description": "Mountain bikes with full suspension systems",
+      "image": "static/assets/default-img.jpg",
+      "parent": 1,
+      "display_order": 1,
+      "is_active": true,
+      "meta_title": "Full Suspension Mountain Bikes",
+      "meta_description": "Premium full suspension mountain bikes"
+    }
+  ],
+  
+  "brands": [
+    {
+      "name": "Trek",
+      "slug": "trek",
+      "description": "American bicycle manufacturer known for quality and innovation",
+      "logo": "static/assets/default-img.jpg",
+      "website_url": "https://www.trekbikes.com",
+      "is_active": true,
+      "display_order": 1
+    },
+    {
+      "name": "Giant",
+      "slug": "giant", 
+      "description": "World's largest bicycle manufacturer",
+      "logo": "static/assets/default-img.jpg",
+      "website_url": "https://www.giant-bicycles.com",
+      "is_active": true,
+      "display_order": 2
+    },
+    {
+      "name": "Specialized",
+      "slug": "specialized",
+      "description": "Premium bicycle brand focused on innovation",
+      "logo": "static/assets/default-img.jpg",
+      "website_url": "https://www.specialized.com", 
+      "is_active": true,
+      "display_order": 3
+    },
+    {
+      "name": "Cannondale",
+      "slug": "cannondale",
+      "description": "American bicycle company known for aluminum frames",
+      "logo": "static/assets/default-img.jpg",
+      "website_url": "https://www.cannondale.com",
+      "is_active": true,
+      "display_order": 4
+    },
+    {
+      "name": "Scott",
+      "slug": "scott",
+      "description": "Swiss company producing high-quality bicycles",
+      "logo": "static/assets/default-img.jpg",
+      "website_url": "https://www.scott-sports.com",
+      "is_active": true,
+      "display_order": 5
+    }
+  ],
+
+  "attribute_types": [
+    {
+      "name": "Color",
+      "slug": "color",
+      "description": "Bike color options",
+      "display_order": 1,
+      "is_active": true
+    },
+    {
+      "name": "Size",
+      "slug": "size", 
+      "description": "Frame size options",
+      "display_order": 2,
+      "is_active": true
+    },
+    {
+      "name": "Material",
+      "slug": "material",
+      "description": "Frame material type",
+      "display_order": 3,
+      "is_active": true
+    },
+    {
+      "name": "Wheel Size",
+      "slug": "wheel-size",
+      "description": "Wheel diameter options",
+      "display_order": 4,
+      "is_active": true
+    },
+    {
+      "name": "Suspension",
+      "slug": "suspension",
+      "description": "Suspension type",
+      "display_order": 5,
+      "is_active": true
+    }
+  ],
+
+  "attribute_values": [
+    {"attribute_type": 1, "value": "Red", "display_order": 1},
+    {"attribute_type": 1, "value": "Blue", "display_order": 2},
+    {"attribute_type": 1, "value": "Black", "display_order": 3},
+    {"attribute_type": 1, "value": "White", "display_order": 4},
+    {"attribute_type": 1, "value": "Green", "display_order": 5},
+    {"attribute_type": 1, "value": "Yellow", "display_order": 6},
+    
+    {"attribute_type": 2, "value": "XS", "display_order": 1},
+    {"attribute_type": 2, "value": "S", "display_order": 2},
+    {"attribute_type": 2, "value": "M", "display_order": 3},
+    {"attribute_type": 2, "value": "L", "display_order": 4},
+    {"attribute_type": 2, "value": "XL", "display_order": 5},
+    {"attribute_type": 2, "value": "XXL", "display_order": 6},
+    
+    {"attribute_type": 3, "value": "Carbon Fiber", "display_order": 1},
+    {"attribute_type": 3, "value": "Aluminum", "display_order": 2},
+    {"attribute_type": 3, "value": "Steel", "display_order": 3},
+    {"attribute_type": 3, "value": "Titanium", "display_order": 4},
+    
+    {"attribute_type": 4, "value": "26 inch", "display_order": 1},
+    {"attribute_type": 4, "value": "27.5 inch", "display_order": 2},
+    {"attribute_type": 4, "value": "29 inch", "display_order": 3},
+    {"attribute_type": 4, "value": "700c", "display_order": 4},
+    
+    {"attribute_type": 5, "value": "Hardtail", "display_order": 1},
+    {"attribute_type": 5, "value": "Full Suspension", "display_order": 2},
+    {"attribute_type": 5, "value": "Rigid", "display_order": 3}
+  ],
+
+  "products": [
+    {
+      "title": "Trek Fuel EX 8 Mountain Bike",
+      "slug": "trek-fuel-ex-8-mountain-bike",
+      "description": "The Trek Fuel EX 8 is a full-suspension mountain bike designed for trail riding. Features 130mm of front and rear travel, making it perfect for technical terrain.",
+      "short_description": "Full-suspension trail bike with 130mm travel",
+      "category": 5,
+      "brand": 1,
+      "sku": "TREK-FUEL-EX8",
+      "price": "3299.99",
+      "sale_price": "2999.99",
+      "stock_quantity": 15,
+      "low_stock_threshold": 5,
+      "weight": "13.5",
+      "length": "180.0",
+      "width": "60.0", 
+      "height": "110.0",
+      "is_active": true,
+      "is_featured": true,
+      "meta_title": "Trek Fuel EX 8 - Premium Mountain Bike",
+      "meta_description": "Shop the Trek Fuel EX 8 full-suspension mountain bike"
+    },
+    {
+      "title": "Giant Defy Advanced Pro Road Bike",
+      "slug": "giant-defy-advanced-pro-road-bike",
+      "description": "The Giant Defy Advanced Pro is an endurance road bike built for comfort and performance on long rides. Carbon frame with endurance geometry.",
+      "short_description": "Carbon endurance road bike for long distance comfort",
+      "category": 2,
+      "brand": 2,
+      "sku": "GIANT-DEFY-PRO",
+      "price": "2799.99",
+      "sale_price": null,
+      "stock_quantity": 8,
+      "low_stock_threshold": 3,
+      "weight": "8.2",
+      "length": "175.0",
+      "width": "45.0",
+      "height": "100.0", 
+      "is_active": true,
+      "is_featured": true,
+      "meta_title": "Giant Defy Advanced Pro - Endurance Road Bike",
+      "meta_description": "Premium carbon road bike for endurance riding"
+    },
+    {
+      "title": "Specialized Turbo Vado Electric Bike",
+      "slug": "specialized-turbo-vado-electric-bike", 
+      "description": "The Specialized Turbo Vado is a premium electric bike perfect for commuting and recreational riding. Features a powerful motor and long-lasting battery.",
+      "short_description": "Premium electric bike for commuting and recreation",
+      "category": 3,
+      "brand": 3,
+      "sku": "SPEC-VADO-TURBO",
+      "price": "4299.99",
+      "sale_price": "3899.99",
+      "stock_quantity": 6,
+      "low_stock_threshold": 2,
+      "weight": "22.0",
+      "length": "185.0",
+      "width": "65.0",
+      "height": "115.0",
+      "is_active": true,
+      "is_featured": true,
+      "meta_title": "Specialized Turbo Vado - Premium E-Bike",
+      "meta_description": "High-performance electric bike for modern commuting"
+    },
+    {
+      "title": "Cannondale Trail Kids Mountain Bike",
+      "slug": "cannondale-trail-kids-mountain-bike",
+      "description": "The Cannondale Trail Kids is designed specifically for young riders who want to tackle trails. Lightweight aluminum frame with reliable components.",
+      "short_description": "Lightweight kids mountain bike for trail adventures",
+      "category": 4,
+      "brand": 4,
+      "sku": "CDALE-TRAIL-KIDS",
+      "price": "599.99",
+      "sale_price": "549.99", 
+      "stock_quantity": 12,
+      "low_stock_threshold": 4,
+      "weight": "11.8",
+      "length": "140.0",
+      "width": "55.0",
+      "height": "85.0",
+      "is_active": true,
+      "is_featured": false,
+      "meta_title": "Cannondale Trail Kids - Youth Mountain Bike",
+      "meta_description": "Perfect mountain bike for young trail riders"
+    },
+    {
+      "title": "Scott Spark RC Team Mountain Bike",
+      "slug": "scott-spark-rc-team-mountain-bike",
+      "description": "The Scott Spark RC Team is a high-end cross-country mountain bike built for racing. Ultra-lightweight carbon frame with efficient suspension.",
+      "short_description": "High-end XC race bike with carbon frame",
+      "category": 1,
+      "brand": 5,
+      "sku": "SCOTT-SPARK-RC",
+      "price": "8999.99",
+      "sale_price": null,
+      "stock_quantity": 3,
+      "low_stock_threshold": 1,
+      "weight": "10.2",
+      "length": "178.0",
+      "width": "58.0",
+      "height": "108.0",
+      "is_active": true,
+      "is_featured": true,
+      "meta_title": "Scott Spark RC Team - Elite XC Race Bike",
+      "meta_description": "Professional cross-country racing mountain bike"
+    }
+  ],
+
+  "product_images": [
+    {"product": 1, "image": "static/assets/default-img.jpg", "alt_text": "Trek Fuel EX 8 - Main View", "position": 1},
+    {"product": 1, "image": "static/assets/default-img.jpg", "alt_text": "Trek Fuel EX 8 - Side View", "position": 2},
+    {"product": 1, "image": "static/assets/default-img.jpg", "alt_text": "Trek Fuel EX 8 - Detail View", "position": 3},
+    
+    {"product": 2, "image": "static/assets/default-img.jpg", "alt_text": "Giant Defy Advanced Pro - Main View", "position": 1},
+    {"product": 2, "image": "static/assets/default-img.jpg", "alt_text": "Giant Defy Advanced Pro - Side View", "position": 2},
+    
+    {"product": 3, "image": "static/assets/default-img.jpg", "alt_text": "Specialized Turbo Vado - Main View", "position": 1},
+    {"product": 3, "image": "static/assets/default-img.jpg", "alt_text": "Specialized Turbo Vado - Battery View", "position": 2},
+    {"product": 3, "image": "static/assets/default-img.jpg", "alt_text": "Specialized Turbo Vado - Display View", "position": 3},
+    
+    {"product": 4, "image": "static/assets/default-img.jpg", "alt_text": "Cannondale Trail Kids - Main View", "position": 1},
+    {"product": 4, "image": "static/assets/default-img.jpg", "alt_text": "Cannondale Trail Kids - Side View", "position": 2},
+    
+    {"product": 5, "image": "static/assets/default-img.jpg", "alt_text": "Scott Spark RC Team - Main View", "position": 1},
+    {"product": 5, "image": "static/assets/default-img.jpg", "alt_text": "Scott Spark RC Team - Detail View", "position": 2}
+  ],
+
+  "product_variants": [
+    {"product": 1, "sku": "TREK-FUEL-EX8-M-RED", "price": "3299.99", "sale_price": "2999.99", "stock_quantity": 5},
+    {"product": 1, "sku": "TREK-FUEL-EX8-L-RED", "price": "3299.99", "sale_price": "2999.99", "stock_quantity": 4},
+    {"product": 1, "sku": "TREK-FUEL-EX8-M-BLUE", "price": "3299.99", "sale_price": "2999.99", "stock_quantity": 3},
+    {"product": 1, "sku": "TREK-FUEL-EX8-L-BLUE", "price": "3299.99", "sale_price": "2999.99", "stock_quantity": 3},
+    
+    {"product": 2, "sku": "GIANT-DEFY-PRO-M-BLACK", "price": "2799.99", "sale_price": null, "stock_quantity": 4},
+    {"product": 2, "sku": "GIANT-DEFY-PRO-L-BLACK", "price": "2799.99", "sale_price": null, "stock_quantity": 4},
+    
+    {"product": 3, "sku": "SPEC-VADO-TURBO-L-WHITE", "price": "4299.99", "sale_price": "3899.99", "stock_quantity": 3},
+    {"product": 3, "sku": "SPEC-VADO-TURBO-XL-WHITE", "price": "4299.99", "sale_price": "3899.99", "stock_quantity": 3},
+    
+    {"product": 4, "sku": "CDALE-TRAIL-KIDS-S-GREEN", "price": "599.99", "sale_price": "549.99", "stock_quantity": 6},
+    {"product": 4, "sku": "CDALE-TRAIL-KIDS-M-GREEN", "price": "599.99", "sale_price": "549.99", "stock_quantity": 6},
+    
+    {"product": 5, "sku": "SCOTT-SPARK-RC-M-BLACK", "price": "8999.99", "sale_price": null, "stock_quantity": 2},
+    {"product": 5, "sku": "SCOTT-SPARK-RC-L-BLACK", "price": "8999.99", "sale_price": null, "stock_quantity": 1}
+  ],
+
+  "variant_attributes": [
+    {"variant": 1, "attribute_value": 1},
+    {"variant": 1, "attribute_value": 9},
+    {"variant": 2, "attribute_value": 1},
+    {"variant": 2, "attribute_value": 10},
+    {"variant": 3, "attribute_value": 2},
+    {"variant": 3, "attribute_value": 9},
+    {"variant": 4, "attribute_value": 2},
+    {"variant": 4, "attribute_value": 10},
+    {"variant": 5, "attribute_value": 3},
+    {"variant": 5, "attribute_value": 9},
+    {"variant": 6, "attribute_value": 3},
+    {"variant": 6, "attribute_value": 10},
+    {"variant": 7, "attribute_value": 4},
+    {"variant": 7, "attribute_value": 10},
+    {"variant": 8, "attribute_value": 4},
+    {"variant": 8, "attribute_value": 11},
+    {"variant": 9, "attribute_value": 5},
+    {"variant": 9, "attribute_value": 8},
+    {"variant": 10, "attribute_value": 5},
+    {"variant": 10, "attribute_value": 9},
+    {"variant": 11, "attribute_value": 3},
+    {"variant": 11, "attribute_value": 9},
+    {"variant": 12, "attribute_value": 3},
+    {"variant": 12, "attribute_value": 10}
+  ],
+
+  "banners": [
+    {
+      "title": "Summer Sale 2024",
+      "description": "Get up to 30% off on all mountain bikes",
+      "image": "static/assets/default-img.jpg",
+      "link": "/categories/mountain-bikes/",
+      "position": "hero",
+      "is_active": true,
+      "display_order": 1,
+      "start_date": "2024-06-01",
+      "end_date": "2024-08-31"
+    },
+    {
+      "title": "New Electric Bikes Collection",
+      "description": "Discover our latest e-bike models with cutting-edge technology",
+      "image": "static/assets/default-img.jpg", 
+      "link": "/categories/electric-bikes/",
+      "position": "secondary",
+      "is_active": true,
+      "display_order": 2,
+      "start_date": "2024-01-01",
+      "end_date": "2024-12-31"
+    },
+    {
+      "title": "Free Shipping Weekend",
+      "description": "Free shipping on all orders over $500",
+      "image": "static/assets/default-img.jpg",
+      "link": "/",
+      "position": "promotion",
+      "is_active": true,
+      "display_order": 3,
+      "start_date": "2024-10-01",
+      "end_date": "2024-10-31"
+    }
+  ],
+
+  "featured_sections": [
+    {
+      "title": "Featured Mountain Bikes",
+      "description": "Top-rated mountain bikes for your next adventure",
+      "section_type": "products",
+      "is_active": true,
+      "display_order": 1
+    },
+    {
+      "title": "Best Selling Road Bikes", 
+      "description": "Most popular road bikes among cyclists",
+      "section_type": "products",
+      "is_active": true,
+      "display_order": 2
+    },
+    {
+      "title": "Electric Bike Collection",
+      "description": "Modern e-bikes for urban commuting",
+      "section_type": "category",
+      "is_active": true,
+      "display_order": 3
+    }
+  ]
+}

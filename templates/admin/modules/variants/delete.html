@@ -1,0 +1,183 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Delete Variant</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:variant_list' product.pk %}" class="btn btn-secondary">
+                            <i class="iconoir-arrow-left me-1"></i> Back to Variants
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="card-title text-white mb-0">
+                            <i class="iconoir-warning-triangle me-2"></i>Confirm Deletion
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger">
+                            <h5 class="alert-heading">Warning!</h5>
+                            <p class="mb-0">
+                                You are about to delete this product variant. This action cannot be undone.
+                            </p>
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="mb-4">
+                            <h5>Product Information</h5>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="mb-1">{{ product.title }}</h6>
+                                    <div class="text-muted small">
+                                        Category: {% if product.category %}{{ product.category.name }}{% else %}None{% endif %} | 
+                                        Brand: {% if product.brand %}{{ product.brand.name }}{% else %}None{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Variant Details -->
+                        <div class="mb-4">
+                            <h5>Variant Details</h5>
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 150px;">SKU:</th>
+                                        <td><strong>{{ variant.sku }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Attributes:</th>
+                                        <td>
+                                            {% if variant.attributes.all %}
+                                                {% for va in variant.attributes.all %}
+                                                <span class="badge bg-primary me-1">
+                                                    {{ va.attribute_value.attribute_type.name }}: {{ va.attribute_value.value }}
+                                                </span>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="text-muted">No attributes</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Price:</th>
+                                        <td>
+                                            {% if variant.sale_price %}
+                                                <span class="text-decoration-line-through text-muted">${{ variant.price }}</span>
+                                                <span class="text-danger fw-bold">${{ variant.sale_price }}</span>
+                                            {% else %}
+                                                <span class="fw-bold">${{ variant.price }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Stock:</th>
+                                        <td>
+                                            {% if variant.stock > 0 %}
+                                                <span class="badge bg-success">{{ variant.stock }} units</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Out of Stock</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% if variant.weight %}
+                                    <tr>
+                                        <th>Weight:</th>
+                                        <td>{{ variant.weight }} kg</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th>Status:</th>
+                                        <td>
+                                            {% if variant.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Created:</th>
+                                        <td>{{ variant.created_at|date:"F d, Y g:i A" }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Impact Warning -->
+                        <div class="mb-4">
+                            <h5>Impact</h5>
+                            <div class="alert alert-warning">
+                                <ul class="mb-0">
+                                    <li>This variant will be permanently removed from the product</li>
+                                    <li>All attribute assignments for this variant will be deleted</li>
+                                    <li>Historical order data referencing this variant will remain, but the variant details will be unavailable</li>
+                                    {% if variant.stock > 0 %}
+                                    <li class="text-danger"><strong>Warning:</strong> This variant has {{ variant.stock }} units in stock</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation Form -->
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                <label class="form-check-label" for="confirmDelete">
+                                    I understand that this action is permanent and cannot be undone
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'dashboard:variant_list' product.pk %}" class="btn btn-secondary btn-lg">
+                                    <i class="iconoir-cancel me-1"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-danger btn-lg">
+                                    <i class="iconoir-trash me-1"></i> Delete Variant Permanently
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Alternative Actions -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6 class="mb-3">Alternative Actions</h6>
+                        <p class="text-muted mb-3">
+                            Instead of deleting, you might want to:
+                        </p>
+                        <a href="{% url 'dashboard:variant_edit' variant.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="iconoir-edit me-1"></i> Edit Variant
+                        </a>
+                        {% if variant.is_active %}
+                        <span class="btn btn-sm btn-outline-warning">
+                            <i class="iconoir-eye-off me-1"></i> Deactivate Variant (make inactive instead)
+                        </span>
+                        {% else %}
+                        <span class="btn btn-sm btn-outline-success">
+                            <i class="iconoir-eye me-1"></i> Activate Variant
+                        </span>
+                        {% endif %}
+                        <a href="{% url 'dashboard:variant_add' product.pk %}" class="btn btn-sm btn-outline-info">
+                            <i class="iconoir-plus me-1"></i> Add New Variant
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

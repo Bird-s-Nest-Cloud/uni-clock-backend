@@ -1,0 +1,188 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Delete Product</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:product_list' %}" class="btn btn-secondary">
+                            <i class="iconoir-arrow-left me-1"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="card-title text-white mb-0">
+                            <i class="iconoir-warning-triangle me-2"></i>Confirm Deletion
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger">
+                            <h5 class="alert-heading">Warning!</h5>
+                            <p class="mb-0">
+                                You are about to delete this product. This action cannot be undone.
+                                All related data will be permanently removed.
+                            </p>
+                        </div>
+
+                        <!-- Product Details -->
+                        <div class="mb-4">
+                            <h5>Product Details</h5>
+                            <div class="row">
+                                {% with product.images.first as first_image %}
+                                {% if first_image %}
+                                <div class="col-md-3">
+                                    <img src="{{ first_image.image.url }}" alt="{{ product.title }}" 
+                                         class="img-fluid rounded border">
+                                </div>
+                                {% endif %}
+                                {% endwith %}
+                                <div class="{% if product.images.first %}col-md-9{% else %}col-md-12{% endif %}">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 150px;">Title:</th>
+                                                <td>{{ product.title }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Category:</th>
+                                                <td>
+                                                    {% if product.category %}
+                                                        {{ product.category.name }}
+                                                    {% else %}
+                                                        <span class="text-muted">No category</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Brand:</th>
+                                                <td>
+                                                    {% if product.brand %}
+                                                        {{ product.brand.name }}
+                                                    {% else %}
+                                                        <span class="text-muted">No brand</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Price:</th>
+                                                <td>
+                                                    {% if product.sale_price %}
+                                                        <span class="text-decoration-line-through text-muted">${{ product.price }}</span>
+                                                        <span class="text-danger fw-bold">${{ product.sale_price }}</span>
+                                                    {% else %}
+                                                        <span class="fw-bold">${{ product.price }}</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Stock:</th>
+                                                <td>
+                                                    <span class="badge {% if product.stock > 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                                        {{ product.stock }} units
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Created:</th>
+                                                <td>{{ product.created_at|date:"F d, Y g:i A" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Related Data Warning -->
+                        <div class="mb-4">
+                            <h5>Related Data to be Deleted</h5>
+                            <div class="alert alert-warning">
+                                <ul class="mb-0">
+                                    <li>
+                                        <strong>{{ product.variants.count }}</strong> Product Variant(s)
+                                    </li>
+                                    <li>
+                                        <strong>{{ product.images.count }}</strong> Product Image(s)
+                                    </li>
+                                    <li>
+                                        <strong>{{ product.reviews.count }}</strong> Review(s)
+                                    </li>
+                                    <li>
+                                        All associated attribute assignments
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation Form -->
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                <label class="form-check-label" for="confirmDelete">
+                                    I understand that this action is permanent and cannot be undone
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'dashboard:product_list' %}" class="btn btn-secondary btn-lg">
+                                    <i class="iconoir-cancel me-1"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-danger btn-lg">
+                                    <i class="iconoir-trash me-1"></i> Delete Product Permanently
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Alternative Actions -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6 class="mb-3">Alternative Actions</h6>
+                        <p class="text-muted mb-3">
+                            Instead of deleting, you might want to:
+                        </p>
+                        <a href="{% url 'dashboard:product_edit' product.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="iconoir-edit me-1"></i> Edit Product
+                        </a>
+                        {% if product.is_active %}
+                        <button type="button" class="btn btn-sm btn-outline-warning" onclick="deactivateProduct()">
+                            <i class="iconoir-eye-off me-1"></i> Deactivate Product (Hide from store)
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn btn-sm btn-outline-success" onclick="activateProduct()">
+                            <i class="iconoir-eye me-1"></i> Activate Product
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function deactivateProduct() {
+    if (confirm('Deactivate this product? It will be hidden from the storefront but data will be preserved.')) {
+        // You can implement this via AJAX or redirect to edit page with is_active=False
+        window.location.href = "{% url 'dashboard:product_edit' product.pk %}?deactivate=1";
+    }
+}
+
+function activateProduct() {
+    if (confirm('Activate this product? It will become visible on the storefront.')) {
+        window.location.href = "{% url 'dashboard:product_edit' product.pk %}?activate=1";
+    }
+}
+</script>
+{% endblock %}

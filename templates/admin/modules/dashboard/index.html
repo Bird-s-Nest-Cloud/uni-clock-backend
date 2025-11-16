@@ -1,0 +1,332 @@
+{% extends 'admin/layouts/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!-- Page Content-->
+<div class="page-content">
+  <div class="container-fluid">
+
+    <!-- Page Title -->
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="page-title-box d-md-flex justify-content-md-between align-items-center">
+          <h4 class="page-title">Dashboard</h4>
+          <div class="">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="{% url 'dashboard:dashboard' %}">Admin</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row">
+      <!-- Total Orders -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center align-items-center">
+              <div class="col-8">
+                <p class="text-muted text-uppercase mb-1 fw-normal fs-13">Total Orders</p>
+                <h4 class="mt-0 mb-0 fw-semibold">{{ total_orders }}</h4>
+              </div>
+              <div class="col-4 align-self-center text-end">
+                <div class="d-flex justify-content-center align-items-center thumb-lg border-dashed border-primary rounded mx-auto bg-primary-subtle">
+                  <i class="iconoir-cart fs-22 align-self-center mb-0 text-primary"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Customers -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center align-items-center">
+              <div class="col-8">
+                <p class="text-muted text-uppercase mb-1 fw-normal fs-13">Total Customers</p>
+                <h4 class="mt-0 mb-0 fw-semibold">{{ total_customers }}</h4>
+              </div>
+              <div class="col-4 align-self-center text-end">
+                <div class="d-flex justify-content-center align-items-center thumb-lg border-dashed border-info rounded mx-auto bg-info-subtle">
+                  <i class="iconoir-user fs-22 align-self-center mb-0 text-info"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Orders -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center align-items-center">
+              <div class="col-8">
+                <p class="text-muted text-uppercase mb-1 fw-normal fs-13">Today's Orders</p>
+                <h4 class="mt-0 mb-0 fw-semibold">{{ todays_orders }}</h4>
+              </div>
+              <div class="col-4 align-self-center text-end">
+                <div class="d-flex justify-content-center align-items-center thumb-lg border-dashed border-success rounded mx-auto bg-success-subtle">
+                  <i class="iconoir-delivery-truck fs-22 align-self-center mb-0 text-success"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Products -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center align-items-center">
+              <div class="col-8">
+                <p class="text-muted text-uppercase mb-1 fw-normal fs-13">Products Available</p>
+                <h4 class="mt-0 mb-0 fw-semibold">{{ total_products }}</h4>
+              </div>
+              <div class="col-4 align-self-center text-end">
+                <div class="d-flex justify-content-center align-items-center thumb-lg border-dashed border-warning rounded mx-auto bg-warning-subtle">
+                  <i class="iconoir-box fs-22 align-self-center mb-0 text-warning"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Statistics Cards -->
+
+    <!-- Top Selling Products -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <div class="row align-items-center">
+              <div class="col">
+                <h4 class="card-title">Top 5 Selling Products</h4>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            {% if top_selling_products %}
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="border-top-0">Product</th>
+                    <th class="border-top-0">Category</th>
+                    <th class="border-top-0">Brand</th>
+                    <th class="border-top-0">Price</th>
+                    <th class="border-top-0 text-end">Total Sold</th>
+                    <th class="border-top-0 text-center">Status</th>
+                    <th class="border-top-0 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for product in top_selling_products %}
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        {% if product.primary_image %}
+                        <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="me-3 align-self-center rounded" height="48">
+                        {% else %}
+                        <div class="avatar-sm bg-light rounded me-3 d-flex align-items-center justify-content-center">
+                          <i class="iconoir-media-image fs-20 text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-grow-1">
+                          <h6 class="m-0 fw-semibold">{{ product.title|truncatechars:40 }}</h6>
+                          <p class="text-muted mb-0 fs-12">SKU: {{ product.sku }}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge bg-primary-subtle text-primary">{{ product.category.name }}</span>
+                    </td>
+                    <td>{{ product.brand.name|default:"-" }}</td>
+                    <td>৳{{ product.price|floatformat:2 }}</td>
+                    <td class="text-end">
+                      <span class="badge bg-success fs-13 px-2">{{ product.total_sold }} units</span>
+                    </td>
+                    <td class="text-center">
+                      {% if product.is_active %}
+                      <span class="badge bg-success-subtle text-success"><i class="iconoir-check-circle me-1"></i>Active</span>
+                      {% else %}
+                      <span class="badge bg-danger-subtle text-danger"><i class="iconoir-cancel me-1"></i>Inactive</span>
+                      {% endif %}
+                    </td>
+                    <td class="text-center">
+                      <a href="{% url 'dashboard:product_edit' product.pk %}" class="btn btn-sm btn-soft-primary" title="Edit Product">
+                        <i class="iconoir-edit fs-16"></i>
+                      </a>
+                      <a href="{% url 'dashboard:variant_list' product.pk %}" class="btn btn-sm btn-soft-info" title="View Variants">
+                        <i class="iconoir-list fs-16"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+              <div class="avatar-lg bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+                <i class="iconoir-cart fs-1 text-muted"></i>
+              </div>
+              <h5 class="text-muted">No Sales Data Available</h5>
+              <p class="text-muted">Start receiving orders to see top selling products here.</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Top Selling Products -->
+
+    <!-- Low Stock Products -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <div class="row align-items-center">
+              <div class="col">
+                <h4 class="card-title">
+                  <i class="iconoir-warning-triangle text-warning me-2"></i>
+                  Low Stock Alert (≤ {{ low_stock_threshold }} units)
+                </h4>
+              </div>
+              <div class="col-auto">
+                <span class="badge bg-warning-subtle text-warning fs-13">
+                  {{ low_stock_products|length }} Product{{ low_stock_products|length|pluralize }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            {% if low_stock_products %}
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="border-top-0">Product</th>
+                    <th class="border-top-0">Variant (SKU)</th>
+                    <th class="border-top-0">Category</th>
+                    <th class="border-top-0">Price</th>
+                    <th class="border-top-0 text-center">Stock Level</th>
+                    <th class="border-top-0 text-center">Status</th>
+                    <th class="border-top-0 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for variant in low_stock_products %}
+                  <tr class="{% if variant.stock == 0 %}table-danger{% elif variant.stock <= 5 %}table-warning{% endif %}">
+                    <td>
+                      <div class="d-flex align-items-center">
+                        {% if variant.product.primary_image %}
+                        <img src="{{ variant.product.primary_image.url }}" alt="{{ variant.product.title }}" class="me-3 align-self-center rounded" height="48">
+                        {% else %}
+                        <div class="avatar-sm bg-light rounded me-3 d-flex align-items-center justify-content-center">
+                          <i class="iconoir-media-image fs-20 text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-grow-1">
+                          <h6 class="m-0 fw-semibold">{{ variant.product.title|truncatechars:35 }}</h6>
+                          <p class="text-muted mb-0 fs-12">{{ variant.get_variant_name }}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge bg-secondary-subtle text-secondary">{{ variant.sku }}</span>
+                    </td>
+                    <td>
+                      <span class="badge bg-primary-subtle text-primary">{{ variant.product.category.name }}</span>
+                    </td>
+                    <td>৳{{ variant.price|floatformat:2 }}</td>
+                    <td class="text-center">
+                      {% if variant.stock == 0 %}
+                      <span class="badge bg-danger fs-13 px-3">
+                        <i class="iconoir-cancel me-1"></i>Out of Stock
+                      </span>
+                      {% elif variant.stock <= 5 %}
+                      <span class="badge bg-danger-subtle text-danger fs-13 px-3">
+                        <i class="iconoir-warning-triangle me-1"></i>{{ variant.stock }} units
+                      </span>
+                      {% else %}
+                      <span class="badge bg-warning-subtle text-warning fs-13 px-3">
+                        <i class="iconoir-info-circle me-1"></i>{{ variant.stock }} units
+                      </span>
+                      {% endif %}
+                    </td>
+                    <td class="text-center">
+                      {% if variant.is_active %}
+                      <span class="badge bg-success-subtle text-success"><i class="iconoir-check-circle me-1"></i>Active</span>
+                      {% else %}
+                      <span class="badge bg-danger-subtle text-danger"><i class="iconoir-cancel me-1"></i>Inactive</span>
+                      {% endif %}
+                    </td>
+                    <td class="text-center">
+                      <a href="{% url 'dashboard:variant_edit' variant.pk %}" class="btn btn-sm btn-soft-primary" title="Edit Variant">
+                        <i class="iconoir-edit fs-16"></i>
+                      </a>
+                      <a href="{% url 'dashboard:product_edit' variant.product.pk %}" class="btn btn-sm btn-soft-info" title="View Product">
+                        <i class="iconoir-eye fs-16"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+              <div class="avatar-lg bg-success-subtle rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+                <i class="iconoir-check-circle fs-1 text-success"></i>
+              </div>
+              <h5 class="text-success">All Stock Levels are Good!</h5>
+              <p class="text-muted">All product variants have sufficient stock above the threshold of {{ low_stock_threshold }} units.</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Low Stock Products -->
+
+  </div>
+  <!-- container -->
+
+  <!--Start Footer-->
+  <footer class="footer text-center text-sm-start d-print-none">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card mb-0 rounded-bottom-0">
+            <div class="card-body">
+              <p class="text-muted mb-0">
+                ©
+                <script>
+                  document.write(new Date().getFullYear());
+                </script>
+                BikeShop Admin
+                <span class="text-muted d-none d-sm-inline-block float-end">
+                  Made with <i class="iconoir-heart-solid text-danger align-middle"></i> for BikeShop
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!--end footer-->
+</div>
+<!-- end page content -->
+
+{% endblock %}

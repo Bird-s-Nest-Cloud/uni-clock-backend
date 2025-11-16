@@ -1,0 +1,145 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <!-- Page Title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Edit User: {{ user_obj.name }}</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:user_list' %}" class="btn btn-secondary">
+                            <i class="iconoir-arrow-left me-1"></i> Back to Users
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Form -->
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">User Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ user_obj.name }}" required>
+                            <div class="invalid-feedback">
+                                Please enter full name.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user_obj.email }}" required>
+                            <div class="invalid-feedback">
+                                Please enter a valid email.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="phone" name="phone" value="{{ user_obj.phone|default:'' }}" placeholder="+8801712345678">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" minlength="8">
+                            <div class="form-text">Leave blank to keep current password. Minimum 8 characters if changing.</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_staff" name="is_staff" {% if user_obj.is_staff %}checked{% endif %}>
+                                <label class="form-check-label" for="is_staff">
+                                    Staff User
+                                </label>
+                            </div>
+                            <small class="text-muted">Staff users can access admin dashboard</small>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {% if user_obj.is_active %}checked{% endif %}>
+                                <label class="form-check-label" for="is_active">
+                                    Active User
+                                </label>
+                            </div>
+                            <small class="text-muted">Inactive users cannot login</small>
+                        </div>
+                            </div>
+
+                            <div class="alert alert-info mt-3">
+                                <strong>User Information:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>User ID: #{{ user_obj.id }}</li>
+                                    <li>Joined: {{ user_obj.date_joined|date:"F d, Y" }}</li>
+                                    <li>Last Updated: {{ user_obj.date_joined|date:"F d, Y H:i" }}</li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="iconoir-save-floppy-disk me-1"></i> Update User
+                                </button>
+                                <a href="{% url 'dashboard:user_list' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                                {% if user_obj != request.user %}
+                                <a href="{% url 'dashboard:user_delete' user_obj.pk %}" class="btn btn-danger btn-lg float-end">
+                                    <i class="iconoir-trash me-1"></i> Delete
+                                </a>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}

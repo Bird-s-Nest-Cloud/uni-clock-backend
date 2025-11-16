@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Login | BikeShop Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="BikeShop Admin Dashboard" name="description" />
+    <meta content="Bike Shop" name="author" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+
+    <!-- Bootstrap Css -->
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <style>
+        .auth-bg {
+            background-image: url("{% static 'assets/images/auth-bg.jpg' %}");
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .auth-logo img {
+            max-height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid vh-100">
+        <div class="row h-100">
+            <div class="col-12">
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <div class="auth-card mx-auto">
+                        <div class="card shadow rounded-3 overflow-hidden" style="max-width: 400px;">
+                            <div class="auth-header p-4 text-center bg-primary">
+                                <div class="auth-logo mb-3">
+                                    <img src="{% static 'assets/images/logo-light.png' %}" alt="BikeShop Admin" class="logo-light">
+                                </div>
+                                <h4 class="text-white mb-0">Welcome Back!</h4>
+                            </div>
+                            <div class="card-body p-4">
+                                {% if form.errors %}
+                                    <div class="alert alert-danger">
+                                        <strong>Error:</strong> Please enter a correct email and password.
+                                        Note that both fields are case-sensitive.
+                                    </div>
+                                {% endif %}
+
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert alert-{{ message.tags }}">
+                                            {{ message }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+
+                                <form method="post" action="{% url 'dashboard:login' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="form-label" for="email">Email Address</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="las la-envelope"></i></span>
+                                            <input type="email" class="form-control" id="email" name="username" 
+                                                   placeholder="Enter your email" required autofocus>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label" for="password">Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="las la-key"></i></span>
+                                            <input type="password" class="form-control" id="password" name="password" 
+                                                   placeholder="Enter your password" required>
+                                        </div>
+                                    </div>
+
+                                    {% if next %}
+                                        <input type="hidden" name="next" value="{{ next }}">
+                                    {% endif %}
+
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary" type="submit">
+                                            <i class="las la-sign-in-alt me-2"></i>Sign In
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vendor js -->
+    <script src="{% static 'assets/js/vendor.min.js' %}"></script>
+    <!-- App js -->
+    <script src="{% static 'assets/js/app.min.js' %}"></script>
+</body>
+</html>

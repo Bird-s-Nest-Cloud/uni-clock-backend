@@ -1,0 +1,194 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .section-type-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .product-count {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <!-- Page Title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Featured Product Sections</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:featured_section_add' %}" class="btn btn-primary">
+                            <i class="iconoir-plus me-1"></i> Add Section
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Filters -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Search</label>
+                                <input type="text" name="search" class="form-control" placeholder="Search by title..." value="{{ search_query }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Section Type</label>
+                                <select name="section_type" class="form-select">
+                                    <option value="">All Types</option>
+                                    {% for value, label in section_types %}
+                                    <option value="{{ value }}" {% if section_type == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Status</label>
+                                <select name="is_active" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="true" {% if is_active == 'true' %}selected{% endif %}>Active</option>
+                                    <option value="false" {% if is_active == 'false' %}selected{% endif %}>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="iconoir-search me-1"></i> Filter
+                                </button>
+                                <a href="{% url 'dashboard:featured_section_list' %}" class="btn btn-secondary">
+                                    <i class="iconoir-refresh me-1"></i> Reset
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sections Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">All Sections ({{ sections.count }})</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Products</th>
+                                        <th>Max</th>
+                                        <th>Order</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for section in sections %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ section.title }}</strong>
+                                            {% if section.subtitle %}
+                                            <br><small class="text-muted">{{ section.subtitle|truncatewords:8 }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if section.section_type == 'manual' %}
+                                            <span class="badge bg-primary section-type-badge">{{ section.get_section_type_display }}</span>
+                                            {% elif section.section_type == 'new' %}
+                                            <span class="badge bg-info section-type-badge">{{ section.get_section_type_display }}</span>
+                                            {% elif section.section_type == 'featured' %}
+                                            <span class="badge bg-warning section-type-badge">{{ section.get_section_type_display }}</span>
+                                            {% elif section.section_type == 'sale' %}
+                                            <span class="badge bg-danger section-type-badge">{{ section.get_section_type_display }}</span>
+                                            {% elif section.section_type == 'category' %}
+                                            <span class="badge bg-secondary section-type-badge">{{ section.get_section_type_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if section.category %}
+                                            <a href="{% url 'dashboard:category_edit' section.category.id %}" class="text-primary">
+                                                {{ section.category.name }}
+                                            </a>
+                                            {% else %}
+                                            <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% with count=section.get_products.count %}
+                                            {% if count == 0 %}
+                                            <span class="product-count text-danger">⚠ {{ count }}</span>
+                                            {% elif count < section.max_products %}
+                                            <span class="product-count text-warning">◐ {{ count }}</span>
+                                            {% else %}
+                                            <span class="product-count text-success">✓ {{ count }}</span>
+                                            {% endif %}
+                                            {% endwith %}
+                                        </td>
+                                        <td>{{ section.max_products }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ section.display_order }}</span>
+                                        </td>
+                                        <td>
+                                            {% if section.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                            <span class="badge bg-danger">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'dashboard:featured_section_edit' section.id %}" class="btn btn-sm btn-soft-primary" title="Edit">
+                                                    <i class="iconoir-edit"></i>
+                                                </a>
+                                                <a href="{% url 'dashboard:featured_section_delete' section.id %}" class="btn btn-sm btn-soft-danger" title="Delete">
+                                                    <i class="iconoir-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            
+                                            <p class="text-muted mb-0">No featured sections found</p>
+                                            <a href="{% url 'dashboard:featured_section_add' %}" class="btn btn-primary btn-sm mt-2">
+                                                <i class="iconoir-plus me-1"></i> Add Your First Section
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

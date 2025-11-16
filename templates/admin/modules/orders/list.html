@@ -1,0 +1,219 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <!-- Page Title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Orders</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Filters -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Search</label>
+                                <input type="text" class="form-control" name="search" 
+                                       placeholder="Search by order #, customer..." value="{{ search_query }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Order Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="">All Status</option>
+                                    {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Payment Status</label>
+                                <select name="payment_status" class="form-select">
+                                    <option value="">All Payment Status</option>
+                                    {% for value, label in payment_status_choices %}
+                                    <option value="{{ value }}" {% if payment_status == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="iconoir-search me-1"></i> Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Order Management ({{ orders.count }})</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if orders %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Items</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Payment</th>
+                                        <th>Date</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'dashboard:order_detail' order.pk %}" class="fw-semibold">
+                                                {{ order.order_number }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {% if order.user %}
+                                                <div>{{ order.user.name }}</div>
+                                                <small class="text-muted">{{ order.user.email }}</small>
+                                            {% else %}
+                                                <span class="text-muted">Guest Order</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ order.get_total_items }} item{{ order.get_total_items|pluralize }}</td>
+                                        <td>৳{{ order.total_price|floatformat:2 }}</td>
+                                        <td>
+                                            {% if order.status == 'pending' %}
+                                                <span class="badge bg-warning">{{ order.get_status_display }}</span>
+                                            {% elif order.status == 'processing' %}
+                                                <span class="badge bg-info">{{ order.get_status_display }}</span>
+                                            {% elif order.status == 'shipped' %}
+                                                <span class="badge bg-primary">{{ order.get_status_display }}</span>
+                                            {% elif order.status == 'delivered' %}
+                                                <span class="badge bg-success">{{ order.get_status_display }}</span>
+                                            {% elif order.status == 'cancelled' %}
+                                                <span class="badge bg-danger">{{ order.get_status_display }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ order.get_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if order.payment_status == 'paid' %}
+                                                <span class="badge bg-success">{{ order.get_payment_status_display }}</span>
+                                            {% elif order.payment_status == 'unpaid' %}
+                                                <span class="badge bg-warning">{{ order.get_payment_status_display }}</span>
+                                            {% elif order.payment_status == 'failed' %}
+                                                <span class="badge bg-danger">{{ order.get_payment_status_display }}</span>
+                                            {% elif order.payment_status == 'refunded' %}
+                                                <span class="badge bg-info">{{ order.get_payment_status_display }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ order.get_payment_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                        <td class="text-end">
+                                            <a href="{% url 'dashboard:order_detail' order.pk %}" class="btn btn-sm btn-soft-primary">
+                                                <i class="iconoir-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'dashboard:order_detail' order.pk %}" class="fw-semibold">
+                                        {{ order.order_number }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if order.user %}
+                                        <div>{{ order.user.name }}</div>
+                                        <small class="text-muted">{{ order.user.email }}</small>
+                                    {% else %}
+                                        <span class="text-muted">Guest Order</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ order.get_total_items }} item{{ order.get_total_items|pluralize }}</td>
+                                <td>৳{{ order.total_price|floatformat:2 }}</td>
+                                <td>
+                                    {% if order.status == 'pending' %}
+                                        <span class="badge badge-soft-warning">{{ order.get_status_display }}</span>
+                                    {% elif order.status == 'processing' %}
+                                        <span class="badge badge-soft-info">{{ order.get_status_display }}</span>
+                                    {% elif order.status == 'shipped' %}
+                                        <span class="badge badge-soft-primary">{{ order.get_status_display }}</span>
+                                    {% elif order.status == 'delivered' %}
+                                        <span class="badge badge-soft-success">{{ order.get_status_display }}</span>
+                                    {% elif order.status == 'cancelled' %}
+                                        <span class="badge badge-soft-danger">{{ order.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if order.payment_status == 'paid' %}
+                                        <span class="badge badge-soft-success">{{ order.get_payment_status_display }}</span>
+                                    {% elif order.payment_status == 'unpaid' %}
+                                        <span class="badge badge-soft-warning">{{ order.get_payment_status_display }}</span>
+                                    {% elif order.payment_status == 'failed' %}
+                                        <span class="badge badge-soft-danger">{{ order.get_payment_status_display }}</span>
+                                    {% elif order.payment_status == 'refunded' %}
+                                        <span class="badge badge-soft-info">{{ order.get_payment_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'dashboard:order_detail' order.pk %}" class="btn btn-sm btn-soft-primary">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="iconoir-shopping-bag display-4 text-muted"></i>
+                            <h5 class="mt-3">No Orders Found</h5>
+                            <p class="text-muted">
+                                {% if search_query or status or payment_status %}
+                                    No orders match your search criteria. Try adjusting your filters.
+                                {% else %}
+                                    No orders available yet.
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

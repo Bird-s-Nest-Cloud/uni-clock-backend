@@ -1,0 +1,155 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <!-- Page Title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">Attribute Types</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:attribute_add' %}" class="btn btn-primary">
+                            <i class="iconoir-plus me-1"></i> Add Attribute Type
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Search -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-10">
+                                <label class="form-label">Search</label>
+                                <input type="text" name="search" class="form-control" 
+                                       placeholder="Search attribute types..." value="{{ search_query }}">
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="iconoir-filter me-1"></i> Search
+                                </button>
+                                <a href="{% url 'dashboard:attribute_list' %}" class="btn btn-secondary">
+                                    <i class="iconoir-refresh me-1"></i>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attributes Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">All Attribute Types ({{ attributes.count }})</h4>
+                        <p class="text-muted mb-0">e.g., Color, Size, Material</p>
+                    </div>
+                    <div class="card-body">
+                        {% if attributes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Slug</th>
+                                        <th>Display Order</th>
+                                        <th>Values</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for attribute in attributes %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ attribute.name }}</strong>
+                                        </td>
+                                        <td>
+                                            <code class="text-muted">{{ attribute.slug }}</code>
+                                        </td>
+                                        <td>{{ attribute.display_order }}</td>
+                                        <td>
+                                            <a href="{% url 'dashboard:attribute_value_list' attribute.pk %}" 
+                                               class="badge bg-info">
+                                                {{ attribute.values_count }} value{{ attribute.values_count|pluralize }}
+                                            </a>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'dashboard:attribute_value_list' attribute.pk %}" 
+                                                   class="btn btn-sm btn-outline-info" title="Manage Values">
+                                                    <i class="iconoir-list"></i> Values
+                                                </a>
+                                                <a href="{% url 'dashboard:attribute_edit' attribute.pk %}" 
+                                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="iconoir-edit"></i>
+                                                </a>
+                                                <a href="{% url 'dashboard:attribute_delete' attribute.pk %}" 
+                                                   class="btn btn-sm btn-outline-danger" title="Delete">
+                                                    <i class="iconoir-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="iconoir-list h1 text-muted"></i>
+                            <p class="text-muted mt-3">No attribute types found.</p>
+                            <a href="{% url 'dashboard:attribute_add' %}" class="btn btn-primary">
+                                <i class="iconoir-plus me-1"></i> Add Your First Attribute Type
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-info">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="iconoir-info-circle me-1"></i> What are Attributes?</h5>
+                        <p class="card-text">
+                            Attributes define product variations. For example:
+                        </p>
+                        <ul>
+                            <li><strong>Color</strong>: Red, Blue, Green</li>
+                            <li><strong>Size</strong>: Small, Medium, Large</li>
+                            <li><strong>Material</strong>: Cotton, Polyester, Leather</li>
+                        </ul>
+                        <p class="card-text mb-0">
+                            Create attribute types here, then add values to each type. Use these to create product variants.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
