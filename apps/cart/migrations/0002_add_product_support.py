@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name='cartitem',
             constraint=models.CheckConstraint(
-                check=(
+                condition=(
                     models.Q(variant__isnull=False, product__isnull=True) |
                     models.Q(variant__isnull=True, product__isnull=False)
                 ),

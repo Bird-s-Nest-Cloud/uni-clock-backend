@@ -241,7 +241,7 @@ class ProductForm(forms.ModelForm):
             'title', 'slug', 'category', 'brand', 'description',
             'price', 'sale_price', 'stock', 'low_stock_threshold',
             'weight', 'length', 'width', 'height',
-            'is_active', 'meta_title', 'meta_description'
+            'is_active', 'authentic', 'meta_title', 'meta_description'
         ]
         widgets = {
             'title': forms.TextInput(attrs={
@@ -311,6 +311,9 @@ class ProductForm(forms.ModelForm):
                 'min': '0'
             }),
             'is_active': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'authentic': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),
             'meta_title': forms.TextInput(attrs={
@@ -468,7 +471,7 @@ class BannerForm(forms.ModelForm):
         model = Banner
         fields = [
             'title', 'subtitle', 'image', 'mobile_image', 'link_product',
-            'button_text', 'display_order', 'is_active', 'start_date', 'end_date'
+            'button_text', 'display_order', 'is_active', 'authentic', 'start_date', 'end_date'
         ]
         widgets = {
             'title': forms.TextInput(attrs={
@@ -504,6 +507,9 @@ class BannerForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             }),
+            'authentic': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
             'start_date': forms.DateTimeInput(attrs={
                 'class': 'form-control',
                 'type': 'datetime-local',
@@ -522,6 +528,7 @@ class BannerForm(forms.ModelForm):
             'button_text': 'Text displayed on the call-to-action button',
             'display_order': 'Lower numbers appear first (0 = highest priority)',
             'is_active': 'Inactive banners are not displayed on the site',
+            'authentic': 'Check for authentic products, uncheck for replica products',
             'start_date': 'Optional: Banner will only display after this date/time',
             'end_date': 'Optional: Banner will stop displaying after this date/time',
         }
@@ -539,14 +546,24 @@ class BannerForm(forms.ModelForm):
         self.fields['link_product'].queryset = Product.objects.filter(is_active=True)
 
     def clean(self):
-        """Validate date range"""
+        """Validate date range and product authenticity"""
         cleaned_data = super().clean()
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
+        authentic = cleaned_data.get('authentic')
+        link_product = cleaned_data.get('link_product')
         
         if start_date and end_date and end_date <= start_date:
             raise forms.ValidationError({
                 'end_date': 'End date must be after start date.'
+            })
+        
+        # Validate that linked product matches banner's authentic setting
+        if link_product and link_product.authentic != authentic:
+            product_type = 'authentic' if link_product.authentic else 'replica'
+            banner_type = 'authentic' if authentic else 'replica'
+            raise forms.ValidationError({
+                'link_product': f'Selected product is {product_type} but banner is set to {banner_type}. They must match.'
             })
         
         return cleaned_data

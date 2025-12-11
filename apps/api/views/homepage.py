@@ -25,8 +25,19 @@ class HomepageView(APIView):
     
     def get(self, request):
         """Get active banners, featured sections, categories, and brands"""
+        # Filter by watch preference from header
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic')
+        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        is_authentic = watch_pref != 'replica'
+        
+        # Debug logging
+        print(f"[HomepageView] Header X-Watch-Pref: '{watch_pref}' | is_authentic: {is_authentic}")
+        
         # Get active banners that are currently active (considering date ranges)
-        banners = Banner.objects.filter(is_active=True).select_related('link_product')
+        banners = Banner.objects.filter(
+            is_active=True,
+            authentic=is_authentic
+        ).select_related('link_product')
         active_banners = [banner for banner in banners if banner.is_currently_active()]
         
         # Get active featured sections

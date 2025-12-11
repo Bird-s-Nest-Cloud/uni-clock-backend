@@ -132,6 +132,16 @@
                                     </div>
                                     <small class="form-text text-muted">{{ form.is_active.help_text }}</small>
                                 </div>
+                                <div class="col-md-4">
+                                    <label class="form-label d-block">Product Type</label>
+                                    <div class="form-check form-switch">
+                                        {{ form.authentic }}
+                                        <label class="form-check-label" for="{{ form.authentic.id_for_label }}">
+                                            Authentic Products
+                                        </label>
+                                    </div>
+                                    <small class="form-text text-muted">{{ form.authentic.help_text }}</small>
+                                </div>
                             </div>
 
                             <hr>

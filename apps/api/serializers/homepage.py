@@ -48,7 +48,11 @@ class HomepageCategorySerializer(serializers.ModelSerializer):
     
     def get_product_count(self, obj):
         """Get active product count for category"""
-        return obj.products.filter(is_active=True).count()
+        request = self.context.get('request')
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic') if request else 'authentic'
+        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        is_authentic = watch_pref != 'replica'
+        return obj.products.filter(is_active=True, authentic=is_authentic).count()
 
 
 class HomepageBrandSerializer(serializers.ModelSerializer):
@@ -69,7 +73,11 @@ class HomepageBrandSerializer(serializers.ModelSerializer):
     
     def get_product_count(self, obj):
         """Get active product count for brand"""
-        return obj.products.filter(is_active=True).count()
+        request = self.context.get('request')
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic') if request else 'authentic'
+        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        is_authentic = watch_pref != 'replica'
+        return obj.products.filter(is_active=True, authentic=is_authentic).count()
 
 
 class BannerLinkProductSerializer(serializers.Serializer):
@@ -102,7 +110,10 @@ class FeaturedSectionSerializer(serializers.ModelSerializer):
     
     def get_products(self, obj):
         """Get products based on section type"""
-        products = obj.get_products()
+        request = self.context.get('request')
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic') if request else 'authentic'
+        # Pass the actual preference value to get_products
+        products = obj.get_products(watch_pref=watch_pref)
         return HomepageProductSerializer(
             products,
             many=True,

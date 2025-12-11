@@ -69,6 +69,12 @@ class Banner(models.Model):
         help_text='Inactive banners are not displayed on the site'
     )
     
+    authentic = models.BooleanField(
+        default=True,
+        verbose_name='Authentic Product Banner',
+        help_text='Set to True for authentic products, False for replica products'
+    )
+    
     start_date = models.DateTimeField(
         null=True,
         blank=True,
@@ -230,14 +236,19 @@ class FeaturedSection(models.Model):
     def __str__(self):
         return f"{self.title} ({self.get_section_type_display()})"
     
-    def get_products(self):
+    def get_products(self, watch_pref='authentic'):
         """
         Returns a filtered QuerySet of products based on the section type configuration.
+        
+        Args:
+            watch_pref: 'authentic' or 'replica' to filter products
         
         Returns:
             QuerySet: Filtered Product queryset limited by max_products
         """
-        queryset = Product.objects.filter(is_active=True)
+        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        is_authentic = watch_pref != 'replica'
+        queryset = Product.objects.filter(is_active=True, authentic=is_authentic)
         
         if self.section_type == 'manual':
             # Return manually selected products

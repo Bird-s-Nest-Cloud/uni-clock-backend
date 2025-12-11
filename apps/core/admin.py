@@ -16,6 +16,7 @@ class BannerAdmin(admin.ModelAdmin):
         'title',
         'image_preview',
         'linked_product',
+        'authentic',
         'display_order',
         'status_indicator',
         'schedule_info',
@@ -24,6 +25,7 @@ class BannerAdmin(admin.ModelAdmin):
     
     list_filter = (
         'is_active',
+        'authentic',
         'created_at',
         'start_date',
         'end_date'
@@ -69,6 +71,7 @@ class BannerAdmin(admin.ModelAdmin):
             'fields': (
                 'display_order',
                 'is_active',
+                'authentic',
                 'current_status'
             )
         }),

@@ -301,11 +301,18 @@
                     <!-- Status -->
                     <div class="card mt-3">
                         <div class="card-body">
-                            <div class="form-check">
+                            <div class="form-check mb-3">
                                 {{ form.is_active }}
                                 <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
                                     Active (Visible on storefront)
                                 </label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.authentic }}
+                                <label class="form-check-label" for="{{ form.authentic.id_for_label }}">
+                                    Authentic Product
+                                </label>
+                                <div class="form-text">Uncheck if this is a replica product</div>
                             </div>
                         </div>
                     </div>

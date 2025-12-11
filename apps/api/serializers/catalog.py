@@ -8,14 +8,19 @@ from catalog.models import Product, ProductVariant, ProductImage, Category, Bran
 class CategorySerializer(serializers.ModelSerializer):
     """Serializer for Category model"""
     product_count = serializers.SerializerMethodField()
+    parent_id = serializers.IntegerField(source='parent.id', read_only=True, allow_null=True)
     
     class Meta:
         model = Category
-        fields = ['id', 'name', 'slug', 'description', 'image', 'product_count']
+        fields = ['id', 'name', 'slug', 'description', 'image', 'parent_id', 'product_count']
     
     def get_product_count(self, obj):
         """Get active product count for category"""
-        return obj.products.filter(is_active=True).count()
+        request = self.context.get('request')
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic') if request else 'authentic'
+        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        is_authentic = watch_pref != 'replica'
+        return obj.products.filter(is_active=True, authentic=is_authentic).count()
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -28,7 +33,11 @@ class BrandSerializer(serializers.ModelSerializer):
     
     def get_product_count(self, obj):
         """Get active product count for brand"""
-        return obj.products.filter(is_active=True).count()
+        request = self.context.get('request')
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic') if request else 'authentic'
+        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        is_authentic = watch_pref != 'replica'
+        return obj.products.filter(is_active=True, authentic=is_authentic).count()
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -95,7 +104,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'slug', 'category', 'brand', 'price', 'sale_price',
             'min_price', 'max_price', 'is_on_sale', 'discount_percentage',
-            'stock', 'primary_image', 'variant_count'
+            'stock', 'primary_image', 'variant_count', 'authentic'
         ]
     
     def get_primary_image(self, obj):
@@ -186,15 +195,35 @@ class ProductDetailSerializer(ProductListSerializer):
 
 class CategoryDetailSerializer(CategorySerializer):
     """Serializer for Category Detail with products"""
-    products = ProductListSerializer(many=True, read_only=True)
+    products = serializers.SerializerMethodField()
     
     class Meta(CategorySerializer.Meta):
         fields = CategorySerializer.Meta.fields + ['products']
+    
+    def get_products(self, obj):
+        """Get products filtered by watch preference"""
+        request = self.context.get('request')
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic') if request else 'authentic'
+        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        is_authentic = watch_pref != 'replica'
+        
+        products = obj.products.filter(is_active=True, authentic=is_authentic)
+        return ProductListSerializer(products, many=True, context=self.context).data
 
 
 class BrandDetailSerializer(BrandSerializer):
     """Serializer for Brand Detail with products"""
-    products = ProductListSerializer(many=True, read_only=True)
+    products = serializers.SerializerMethodField()
     
     class Meta(BrandSerializer.Meta):
         fields = BrandSerializer.Meta.fields + ['products']
+    
+    def get_products(self, obj):
+        """Get products filtered by watch preference"""
+        request = self.context.get('request')
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic') if request else 'authentic'
+        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        is_authentic = watch_pref != 'replica'
+        
+        products = obj.products.filter(is_active=True, authentic=is_authentic)
+        return ProductListSerializer(products, many=True, context=self.context).data

@@ -230,6 +230,11 @@ class Product(models.Model):
         help_text='Inactive products are hidden from storefront'
     )
 
+    authentic = models.BooleanField(
+        default=True,
+        help_text='Indicates if the product is authentic'
+    )
+
     meta_title = models.CharField(
         max_length=200,
         blank=True,

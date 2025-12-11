@@ -131,7 +131,7 @@ class CartItem(models.Model):
         # Ensure uniqueness: one variant OR one product per cart
         constraints = [
             models.CheckConstraint(
-                check=(
+                condition=(
                     models.Q(variant__isnull=False, product__isnull=True) |
                     models.Q(variant__isnull=True, product__isnull=False)
                 ),

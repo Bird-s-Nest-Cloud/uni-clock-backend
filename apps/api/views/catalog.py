@@ -32,7 +32,18 @@ class ProductListView(StandardResponseMixin, generics.ListAPIView):
     
     def get_queryset(self):
         """Get filtered queryset"""
-        queryset = Product.objects.filter(is_active=True).select_related(
+        # Filter by watch preference from header
+        watch_pref = self.request.headers.get('X-Watch-Pref', 'authentic')
+        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        is_authentic = watch_pref != 'replica'
+        
+        # Debug logging
+        print(f"[ProductListView] Header X-Watch-Pref: '{watch_pref}' | is_authentic: {is_authentic}")
+        
+        queryset = Product.objects.filter(
+            is_active=True,
+            authentic=is_authentic
+        ).select_related(
             'category', 'brand'
         ).prefetch_related('images', 'variants')
         
