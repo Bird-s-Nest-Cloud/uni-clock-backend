@@ -14,8 +14,9 @@ from api.serializers import (
     CategoryDetailSerializer,
     BrandSerializer,
     BrandDetailSerializer,
+    ProductSearchSerializer,
 )
-from api.utils import StandardResponseMixin
+from api.utils import StandardResponseMixin, success_response
 
 
 class ProductListView(StandardResponseMixin, generics.ListAPIView):
@@ -162,4 +163,45 @@ class BrandDetailView(StandardResponseMixin, generics.RetrieveAPIView):
             'products__images',
             'products__category',
             'products__variants'
+        )
+
+
+class ProductSearchView(generics.GenericAPIView):
+    """
+    GET /api/search/?q=search_term
+    Search products by title, category name, or brand name
+    Returns product title, slug, and image
+    """
+    serializer_class = ProductSearchSerializer
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        """Search products by query parameter"""
+        search_query = request.query_params.get('q', '').strip()
+        
+        if not search_query:
+            return success_response(
+                data=[],
+                message="Please provide a search query"
+            )
+        
+        # Filter by watch preference from header
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic')
+        is_authentic = watch_pref != 'replica'
+        
+        # Search products by title, category name, or brand name
+        queryset = Product.objects.filter(
+            is_active=True,
+            authentic=is_authentic
+        ).filter(
+            Q(title__icontains=search_query) |
+            Q(category__name__icontains=search_query) |
+            Q(brand__name__icontains=search_query)
+        ).select_related('category', 'brand').prefetch_related('images').distinct()
+        
+        serializer = self.get_serializer(queryset, many=True)
+        
+        return success_response(
+            data=serializer.data,
+            message=f"Found {len(serializer.data)} products matching '{search_query}'"
         )

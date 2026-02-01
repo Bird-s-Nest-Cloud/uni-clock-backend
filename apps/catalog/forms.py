@@ -542,8 +542,9 @@ class BannerForm(forms.ModelForm):
         self.fields['start_date'].required = False
         self.fields['end_date'].required = False
         
-        # Filter only active products for linking
-        self.fields['link_product'].queryset = Product.objects.filter(is_active=True)
+        # Filter only active products for linking and add authentic/replica indicator
+        self.fields['link_product'].queryset = Product.objects.filter(is_active=True).order_by('title')
+        self.fields['link_product'].label_from_instance = lambda obj: f"{obj.title} [{'Authentic' if obj.authentic else 'Replica'}]"
 
     def clean(self):
         """Validate date range and product authenticity"""
@@ -575,7 +576,7 @@ class FeaturedSectionForm(forms.ModelForm):
     class Meta:
         model = FeaturedSection
         fields = [
-            'title', 'subtitle', 'section_type', 'category', 'products',
+            'title', 'subtitle', 'section_type', 'products',
             'max_products', 'display_order', 'is_active'
         ]
         widgets = {
@@ -592,10 +593,6 @@ class FeaturedSectionForm(forms.ModelForm):
                 'class': 'form-select',
                 'id': 'id_section_type',
                 'required': True
-            }),
-            'category': forms.Select(attrs={
-                'class': 'form-select',
-                'id': 'id_category',
             }),
             'products': forms.SelectMultiple(attrs={
                 'class': 'form-select',
@@ -620,9 +617,8 @@ class FeaturedSectionForm(forms.ModelForm):
         help_texts = {
             'title': 'Heading text for the product section',
             'subtitle': 'Optional descriptive text for the section',
-            'section_type': 'How products are selected for this section',
-            'category': 'Required when section type is "From Category"',
-            'products': 'Select products manually (only for "Manual Selection" type)',
+            'section_type': 'Label/category for this section',
+            'products': 'Select products to display in this section',
             'max_products': 'Maximum number of products to display (1-50)',
             'display_order': 'Lower numbers appear first on the homepage',
             'is_active': 'Inactive sections are not displayed on the homepage',
@@ -632,30 +628,21 @@ class FeaturedSectionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Make optional fields not required
         self.fields['subtitle'].required = False
-        self.fields['category'].required = False
-        self.fields['products'].required = False
+        self.fields['products'].required = True
         
-        # Filter only active products and categories
-        self.fields['products'].queryset = Product.objects.filter(is_active=True)
-        self.fields['category'].queryset = Category.objects.filter(is_active=True)
+        # Filter only active products and add authentic/replica indicator
+        self.fields['products'].queryset = Product.objects.filter(is_active=True).order_by('title')
+        self.fields['products'].label_from_instance = lambda obj: f"{obj.title} {'[Authentic]' if obj.authentic else '[Replica]'}"
 
     def clean(self):
-        """Validate field requirements based on section_type"""
+        """Validate that at least one product is selected"""
         cleaned_data = super().clean()
-        section_type = cleaned_data.get('section_type')
-        category = cleaned_data.get('category')
         products = cleaned_data.get('products')
         
-        # Validate category is required for category-based sections
-        if section_type == 'category' and not category:
+        # Validate products are required
+        if not products:
             raise forms.ValidationError({
-                'category': 'Category is required when section type is "From Category".'
-            })
-        
-        # Validate products are required for manual sections
-        if section_type == 'manual' and not products:
-            raise forms.ValidationError({
-                'products': 'At least one product must be selected for manual sections.'
+                'products': 'At least one product must be selected.'
             })
         
         return cleaned_data

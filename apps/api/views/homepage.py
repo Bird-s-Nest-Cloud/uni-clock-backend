@@ -43,7 +43,7 @@ class HomepageView(APIView):
         # Get active featured sections
         featured_sections = FeaturedSection.objects.filter(
             is_active=True
-        ).select_related('category').prefetch_related('products')
+        ).prefetch_related('products')
         
         # Get active categories (limit to top 10 or all if needed)
         categories = Category.objects.filter(

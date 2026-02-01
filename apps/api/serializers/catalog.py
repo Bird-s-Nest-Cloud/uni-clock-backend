@@ -40,6 +40,25 @@ class BrandSerializer(serializers.ModelSerializer):
         return obj.products.filter(is_active=True, authentic=is_authentic).count()
 
 
+class ProductSearchSerializer(serializers.ModelSerializer):
+    """Serializer for Product Search Results"""
+    image = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Product
+        fields = ['title', 'slug', 'image']
+    
+    def get_image(self, obj):
+        """Get primary product image (first by position)"""
+        primary_image = obj.images.order_by('position').first()
+        if primary_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(primary_image.image.url)
+            return primary_image.image.url
+        return None
+
+
 class ProductImageSerializer(serializers.ModelSerializer):
     """Serializer for Product Images"""
     

@@ -23,6 +23,7 @@ from api.views import (
     CategoryDetailView,
     BrandListView,
     BrandDetailView,
+    ProductSearchView,
     
     # Homepage views
     HomepageView,
@@ -79,6 +80,9 @@ urlpatterns = [
     # Brands
     path('brands/', BrandListView.as_view(), name='brand-list'),
     path('brands/<slug:slug>/', BrandDetailView.as_view(), name='brand-detail'),
+    
+    # Search
+    path('search/', ProductSearchView.as_view(), name='product-search'),
     
     # ============================================================================
     # HOMEPAGE CONTENT

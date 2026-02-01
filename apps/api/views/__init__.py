@@ -24,6 +24,7 @@ from .catalog import (
     CategoryDetailView,
     BrandListView,
     BrandDetailView,
+    ProductSearchView,
 )
 
 # Homepage views
@@ -65,6 +66,7 @@ __all__ = [
     'CategoryDetailView',
     'BrandListView',
     'BrandDetailView',
+    'ProductSearchView',
     
     # Homepage
     'HomepageView',

@@ -101,7 +101,7 @@ class BannerSerializer(serializers.ModelSerializer):
 
 
 class FeaturedSectionSerializer(serializers.ModelSerializer):
-    """Serializer for Featured Sections with products"""
+    """Serializer for Featured Sections with manually selected products"""
     products = serializers.SerializerMethodField()
     
     class Meta:

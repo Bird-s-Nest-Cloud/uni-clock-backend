@@ -1124,7 +1124,7 @@ def banner_toggle_status(request, pk):
 @user_passes_test(admin_required)
 def featured_section_list(request):
     """Display list of all featured sections with search and filter"""
-    sections = FeaturedSection.objects.select_related('category').prefetch_related('products').all()
+    sections = FeaturedSection.objects.prefetch_related('products').all()
     
     # Search functionality
     search_query = request.GET.get('search', '')

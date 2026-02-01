@@ -3,7 +3,7 @@
 
 {% block extra_css %}
 <style>
-    .section-type-help {
+    .products-help {
         padding: 15px;
         border-radius: 8px;
         margin-bottom: 20px;
@@ -53,7 +53,7 @@
                             <!-- Section Information -->
                             <h5 class="mb-3">Section Information</h5>
                             <div class="row mb-4">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="{{ form.title.id_for_label }}" class="form-label">Title *</label>
                                     {{ form.title }}
                                     {% if form.title.errors %}
@@ -61,13 +61,21 @@
                                     {% endif %}
                                     <small class="form-text text-muted">{{ form.title.help_text }}</small>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="{{ form.subtitle.id_for_label }}" class="form-label">Subtitle</label>
                                     {{ form.subtitle }}
                                     {% if form.subtitle.errors %}
                                     <div class="invalid-feedback d-block">{{ form.subtitle.errors.0 }}</div>
                                     {% endif %}
                                     <small class="form-text text-muted">{{ form.subtitle.help_text }}</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="{{ form.section_type.id_for_label }}" class="form-label">Section Type *</label>
+                                    {{ form.section_type }}
+                                    {% if form.section_type.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.section_type.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">{{ form.section_type.help_text }}</small>
                                 </div>
                             </div>
 
@@ -76,16 +84,7 @@
                             <!-- Product Selection -->
                             <h5 class="mb-3">Product Selection</h5>
                             
-                            <!-- Section Type -->
                             <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label for="{{ form.section_type.id_for_label }}" class="form-label">Section Type *</label>
-                                    {{ form.section_type }}
-                                    {% if form.section_type.errors %}
-                                    <div class="invalid-feedback d-block">{{ form.section_type.errors.0 }}</div>
-                                    {% endif %}
-                                    <small class="form-text text-muted">{{ form.section_type.help_text }}</small>
-                                </div>
                                 <div class="col-md-6">
                                     <label for="{{ form.max_products.id_for_label }}" class="form-label">Maximum Products *</label>
                                     {{ form.max_products }}
@@ -96,46 +95,10 @@
                                 </div>
                             </div>
 
-                            <!-- Section Type Help -->
-                            <div id="sectionTypeHelp" class="section-type-help bg-light mb-4" style="display: none;">
-                                <div id="helpManual" style="display: none;">
-                                    <strong>Manual Selection:</strong>
-                                    <p class="mb-0">Select specific products to display in this section. Use the product selection field below.</p>
-                                </div>
-                                <div id="helpNew" style="display: none;">
-                                    <strong>New Arrivals:</strong>
-                                    <p class="mb-0">Automatically displays the most recently added products. Products are sorted by creation date.</p>
-                                </div>
-                                <div id="helpFeatured" style="display: none;">
-                                    <strong>Featured Products:</strong>
-                                    <p class="mb-0">Displays products marked as "featured" in the product settings.</p>
-                                </div>
-                                <div id="helpSale" style="display: none;">
-                                    <strong>On Sale:</strong>
-                                    <p class="mb-0">Displays products that have a sale price set and are currently on sale.</p>
-                                </div>
-                                <div id="helpCategory" style="display: none;">
-                                    <strong>From Category:</strong>
-                                    <p class="mb-0">Displays products from the selected category. Use the category field below.</p>
-                                </div>
-                            </div>
-
-                            <!-- Category (for category type) -->
-                            <div class="row mb-4" id="categoryField" style="display: none;">
-                                <div class="col-md-6">
-                                    <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
-                                    {{ form.category }}
-                                    {% if form.category.errors %}
-                                    <div class="invalid-feedback d-block">{{ form.category.errors.0 }}</div>
-                                    {% endif %}
-                                    <small class="form-text text-muted">{{ form.category.help_text }}</small>
-                                </div>
-                            </div>
-
-                            <!-- Products (for manual type) -->
-                            <div class="row mb-4" id="productsField" style="display: none;">
+                            <!-- Products -->
+                            <div class="row mb-4">
                                 <div class="col-12">
-                                    <label for="{{ form.products.id_for_label }}" class="form-label">Products</label>
+                                    <label for="{{ form.products.id_for_label }}" class="form-label">Products *</label>
                                     {{ form.products }}
                                     {% if form.products.errors %}
                                     <div class="invalid-feedback d-block">{{ form.products.errors.0 }}</div>
@@ -190,45 +153,4 @@
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const sectionTypeSelect = document.getElementById('id_section_type');
-    const categoryField = document.getElementById('categoryField');
-    const productsField = document.getElementById('productsField');
-    const sectionTypeHelp = document.getElementById('sectionTypeHelp');
-    
-    function updateFields() {
-        const selectedType = sectionTypeSelect.value;
-        
-        // Hide all fields and help sections
-        categoryField.style.display = 'none';
-        productsField.style.display = 'none';
-        sectionTypeHelp.style.display = 'none';
-        document.querySelectorAll('[id^="help"]').forEach(el => el.style.display = 'none');
-        
-        // Show relevant fields based on section type
-        if (selectedType === 'category') {
-            categoryField.style.display = 'flex';
-            sectionTypeHelp.style.display = 'block';
-            document.getElementById('helpCategory').style.display = 'block';
-        } else if (selectedType === 'manual') {
-            productsField.style.display = 'flex';
-            sectionTypeHelp.style.display = 'block';
-            document.getElementById('helpManual').style.display = 'block';
-        } else if (selectedType) {
-            sectionTypeHelp.style.display = 'block';
-            const helpId = 'help' + selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
-            const helpEl = document.getElementById(helpId);
-            if (helpEl) helpEl.style.display = 'block';
-        }
-    }
-    
-    // Update on change
-    sectionTypeSelect.addEventListener('change', updateFields);
-    
-    // Initial update
-    updateFields();
-});
-</script>
 {% endblock %}

@@ -201,7 +201,7 @@ class BannerAdmin(admin.ModelAdmin):
 @admin.register(FeaturedSection)
 class FeaturedSectionAdmin(admin.ModelAdmin):
     """
-    Admin interface for FeaturedSection model with product selection and preview.
+    Admin interface for FeaturedSection model with manual product selection.
     """
     list_display = (
         'title',
@@ -217,13 +217,11 @@ class FeaturedSectionAdmin(admin.ModelAdmin):
         'section_type',
         'is_active',
         'created_at',
-        'category'
     )
     
     search_fields = (
         'title',
         'subtitle',
-        'category__name'
     )
     
     readonly_fields = (
@@ -239,17 +237,16 @@ class FeaturedSectionAdmin(admin.ModelAdmin):
         ('Section Information', {
             'fields': (
                 'title',
-                'subtitle'
+                'subtitle',
+                'section_type'
             )
         }),
         ('Product Selection', {
             'fields': (
-                'section_type',
-                'category',
                 'products',
                 'max_products'
             ),
-            'description': 'Configure how products are selected for this section'
+            'description': 'Select products to display in this section'
         }),
         ('Display Settings', {
             'fields': (
@@ -355,21 +352,3 @@ class FeaturedSectionAdmin(admin.ModelAdmin):
         updated = queryset.update(is_active=False)
         self.message_user(request, f'{updated} section(s) deactivated successfully.')
     deactivate_sections.short_description = 'Deactivate selected sections'
-    
-    def get_form(self, request, obj=None, **kwargs):
-        """Customize form to show/hide fields based on section_type"""
-        form = super().get_form(request, obj, **kwargs)
-        
-        # Add help text based on section type
-        if obj:
-            if obj.section_type == 'manual':
-                form.base_fields['products'].help_text = 'Select the products to display in this section'
-                form.base_fields['category'].help_text = 'Not used for manual selection'
-            elif obj.section_type == 'category':
-                form.base_fields['category'].help_text = 'Required: Select the category to display products from'
-                form.base_fields['products'].help_text = 'Not used for category-based selection'
-            else:
-                form.base_fields['products'].help_text = 'Not used for automatic selection'
-                form.base_fields['category'].help_text = 'Not used for automatic selection'
-        
-        return form

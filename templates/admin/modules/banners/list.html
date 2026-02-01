@@ -98,7 +98,7 @@
                                     <tr>
                                         <th>Preview</th>
                                         <th>Title</th>
-                                        <th>Linked Product</th>
+                                        <th>Type</th>
                                         <th>Display Order</th>
                                         <th>Status</th>
                                         <th>Schedule</th>
@@ -124,12 +124,10 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {% if banner.link_product %}
-                                            <a href="{% url 'dashboard:product_edit' banner.link_product.id %}" class="text-primary">
-                                                {{ banner.link_product.name }}
-                                            </a>
+                                            {% if banner.authentic %}
+                                            <span class="badge bg-primary">Authentic</span>
                                             {% else %}
-                                            <span class="text-muted">-</span>
+                                            <span class="badge bg-warning text-dark">Replica</span>
                                             {% endif %}
                                         </td>
                                         <td>

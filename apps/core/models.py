@@ -144,16 +144,15 @@ class Banner(models.Model):
 
 class FeaturedSection(models.Model):
     """
-    Configurable product sections for the homepage with different selection strategies.
-    Supports manual product selection or automatic filtering by criteria.
+    Configurable product sections for the homepage with manually selected products.
     """
     
     SECTION_TYPE_CHOICES = [
-        ('manual', 'Manual Selection'),
         ('new', 'New Arrivals'),
         ('featured', 'Featured Products'),
         ('sale', 'On Sale'),
-        ('category', 'From Category'),
+        ('popular', 'Popular Products'),
+        ('custom', 'Custom Section'),
     ]
     
     title = models.CharField(
@@ -172,19 +171,9 @@ class FeaturedSection(models.Model):
     section_type = models.CharField(
         max_length=20,
         choices=SECTION_TYPE_CHOICES,
-        default='manual',
+        default='custom',
         verbose_name='Section Type',
-        help_text='How products are selected for this section'
-    )
-    
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name='featured_sections',
-        verbose_name='Category',
-        help_text='Required when section type is "From Category"'
+        help_text='Label/category for this section'
     )
     
     products = models.ManyToManyField(
@@ -192,7 +181,7 @@ class FeaturedSection(models.Model):
         blank=True,
         related_name='featured_in_sections',
         verbose_name='Products',
-        help_text='Select products manually (only used for "Manual Selection" type)'
+        help_text='Select products to display in this section'
     )
     
     max_products = models.IntegerField(
@@ -234,11 +223,11 @@ class FeaturedSection(models.Model):
         verbose_name_plural = 'Featured Sections'
     
     def __str__(self):
-        return f"{self.title} ({self.get_section_type_display()})"
+        return self.title
     
     def get_products(self, watch_pref='authentic'):
         """
-        Returns a filtered QuerySet of products based on the section type configuration.
+        Returns the manually selected products for this section.
         
         Args:
             watch_pref: 'authentic' or 'replica' to filter products
@@ -246,36 +235,15 @@ class FeaturedSection(models.Model):
         Returns:
             QuerySet: Filtered Product queryset limited by max_products
         """
-        # Check if preference is explicitly 'replica', otherwise treat as authentic
+        # Determine if showing authentic or replica products
         is_authentic = watch_pref != 'replica'
-        queryset = Product.objects.filter(is_active=True, authentic=is_authentic)
         
-        if self.section_type == 'manual':
-            # Return manually selected products
-            product_ids = self.products.filter(is_active=True).values_list('id', flat=True)
-            queryset = Product.objects.filter(id__in=product_ids)
-        
-        elif self.section_type == 'new':
-            # Return newest products
-            queryset = queryset.order_by('-created_at')
-        
-        elif self.section_type == 'featured':
-            # Return featured products (products that are in featured sections)
-            queryset = queryset.order_by('-created_at')
-        
-        elif self.section_type == 'sale':
-            # Return products on sale (assuming there's a sale_price field)
-            queryset = queryset.filter(
-                sale_price__isnull=False,
-                sale_price__lt=models.F('price')
-            ).order_by('-created_at')
-        
-        elif self.section_type == 'category':
-            # Return products from the selected category
-            if self.category:
-                queryset = queryset.filter(category=self.category).order_by('-created_at')
-            else:
-                queryset = queryset.none()
+        # Return manually selected products that are active and match the watch preference
+        product_ids = self.products.filter(
+            is_active=True,
+            authentic=is_authentic
+        ).values_list('id', flat=True)
+        queryset = Product.objects.filter(id__in=product_ids)
         
         # Limit to max_products
         return queryset[:self.max_products]

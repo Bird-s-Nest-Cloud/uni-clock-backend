@@ -22,6 +22,7 @@ from .catalog import (
     ProductListSerializer,
     ProductDetailSerializer,
     ProductVariantSerializer,
+    ProductSearchSerializer,
 )
 
 from .homepage import (
