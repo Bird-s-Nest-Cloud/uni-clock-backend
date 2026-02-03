@@ -1,52 +1,50 @@
+# Database
+db.sqlite3
+*.sqlite3
+
 # Python
-__pycache__/
+_pycache_/
 *.py[cod]
 *$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Django
 *.log
-# db.sqlite3
-# media/
-# staticfiles/
+local_settings.py
+db.sqlite3-journal
 
-# VS Code
+# Media
+media/
+
+# Static
+staticfiles/
+
+# IDE
 .vscode/
-
-# Environments
-.env
-.venv/
-venv/
-ENV/
-
-# Pipenv
-Pipfile.lock
-
-# Migrations
-**/migrations/*.pyc
-**/migrations/*.pyo
-**/migrations/*.pyd
-**/migrations/__pycache__/
+.idea/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Coverage
-htmlcov/
-.coverage
-.tox/
-
-# MyPy
-.mypy_cache/
-.dmypy.json
-
-# Pytest
-.pytest_cache/
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Others
-*.swp
-*.swo
-.idea/
