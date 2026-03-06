@@ -235,7 +235,7 @@ def category_list(request):
     """Display list of all categories with search and filter"""
     from catalog.forms import CategoryForm
     
-    categories = Category.objects.select_related('parent').all()
+    categories = Category.objects.all()
     
     # Search functionality
     search_query = request.GET.get('search', '')
@@ -247,20 +247,10 @@ def category_list(request):
     if is_active:
         categories = categories.filter(is_active=is_active == 'true')
     
-    # Filter by parent
-    parent_id = request.GET.get('parent', '')
-    if parent_id:
-        if parent_id == 'none':
-            categories = categories.filter(parent__isnull=True)
-        else:
-            categories = categories.filter(parent_id=parent_id)
-    
     context = {
         'categories': categories,
         'search_query': search_query,
         'is_active': is_active,
-        'parent_id': parent_id,
-        'all_categories': Category.objects.filter(parent__isnull=True),  # For parent filter
     }
     return render(request, 'admin/modules/categories/list.html', context)
 
@@ -316,8 +306,7 @@ def category_delete(request, pk):
     """Delete category with confirmation"""
     category = get_object_or_404(Category, pk=pk)
     
-    # Check if category has children
-    has_children = category.children.exists()
+    # Check if category has products
     has_products = category.products.exists()
     
     if request.method == 'POST':
@@ -332,9 +321,7 @@ def category_delete(request, pk):
     
     context = {
         'category': category,
-        'has_children': has_children,
         'has_products': has_products,
-        'children_count': category.children.count(),
         'products_count': category.products.count(),
     }
     return render(request, 'admin/modules/categories/delete.html', context)
@@ -443,7 +430,7 @@ def product_list(request):
     from catalog.forms import ProductForm
     from catalog.models import ProductImage
     
-    products = Product.objects.select_related('category', 'brand').prefetch_related('images').all()
+    products = Product.objects.select_related('brand').prefetch_related('images', 'categories').all()
     
     # Search functionality
     search_query = request.GET.get('search', '')
@@ -455,15 +442,18 @@ def product_list(request):
     if is_active:
         products = products.filter(is_active=is_active == 'true')
     
-    # Filter by category
+    # Filter by category (products that have this category)
     category_id = request.GET.get('category', '')
     if category_id:
-        products = products.filter(category_id=category_id)
+        products = products.filter(categories__id=category_id)
     
     # Filter by brand
     brand_id = request.GET.get('brand', '')
     if brand_id:
         products = products.filter(brand_id=brand_id)
+    
+    # Remove duplicates from ManyToMany filter
+    products = products.distinct()
     
     context = {
         'products': products,

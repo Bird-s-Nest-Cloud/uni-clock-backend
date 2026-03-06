@@ -12,7 +12,7 @@ class CategoryForm(forms.ModelForm):
     
     class Meta:
         model = Category
-        fields = ['name', 'slug', 'parent', 'description', 'image', 'is_active', 'display_order']
+        fields = ['name', 'slug', 'description', 'image', 'is_active', 'display_order']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -22,9 +22,6 @@ class CategoryForm(forms.ModelForm):
             'slug': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Auto-generated from name (optional)',
-            }),
-            'parent': forms.Select(attrs={
-                'class': 'form-select',
             }),
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
@@ -46,7 +43,6 @@ class CategoryForm(forms.ModelForm):
         }
         help_texts = {
             'slug': 'Leave empty to auto-generate from name',
-            'parent': 'Leave empty for top-level category',
             'description': 'Optional category description',
             'image': 'Upload category banner image (optional)',
             'is_active': 'Inactive categories are hidden from storefront',
@@ -55,13 +51,8 @@ class CategoryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Exclude self from parent choices when editing
-        if self.instance.pk:
-            self.fields['parent'].queryset = Category.objects.exclude(pk=self.instance.pk)
-        
         # Make slug optional in form
         self.fields['slug'].required = False
-        self.fields['parent'].required = False
         self.fields['description'].required = False
         self.fields['image'].required = False
 
@@ -82,23 +73,6 @@ class CategoryForm(forms.ModelForm):
             raise forms.ValidationError('A category with this slug already exists.')
         
         return slug
-
-    def clean(self):
-        """Validate parent relationship to prevent circular references"""
-        cleaned_data = super().clean()
-        parent = cleaned_data.get('parent')
-        
-        if parent and self.instance.pk:
-            # Check if parent is not a descendant of self
-            current = parent
-            while current:
-                if current.pk == self.instance.pk:
-                    raise forms.ValidationError({
-                        'parent': 'Cannot set a child category as parent (circular reference)'
-                    })
-                current = current.parent
-        
-        return cleaned_data
 
 
 class BrandForm(forms.ModelForm):
@@ -238,7 +212,7 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
-            'title', 'slug', 'category', 'brand', 'description',
+            'title', 'slug', 'categories', 'brand', 'description',
             'price', 'sale_price', 'stock', 'low_stock_threshold',
             'weight', 'length', 'width', 'height',
             'is_active', 'authentic', 'meta_title', 'meta_description'
@@ -253,8 +227,8 @@ class ProductForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Auto-generated from title (optional)',
             }),
-            'category': forms.Select(attrs={
-                'class': 'form-select',
+            'categories': forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input',
             }),
             'brand': forms.Select(attrs={
                 'class': 'form-select',
@@ -329,7 +303,7 @@ class ProductForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['slug'].required = False
-        self.fields['category'].required = False
+        self.fields['categories'].required = False
         self.fields['brand'].required = False
         self.fields['description'].required = False
         self.fields['sale_price'].required = False

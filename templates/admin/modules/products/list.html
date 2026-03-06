@@ -113,7 +113,7 @@
                                     <tr>
                                         <th>Image</th>
                                         <th>Title</th>
-                                        <th>Category</th>
+                                        <th>Categories</th>
                                         <th>Brand</th>
                                         <th>Price</th>
                                         <th>Stock</th>
@@ -143,11 +143,11 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {% if product.category %}
-                                            <span class="badge bg-info">{{ product.category.name }}</span>
-                                            {% else %}
+                                            {% for cat in product.categories.all %}
+                                            <span class="badge bg-info me-1 mb-1">{{ cat.name }}</span>
+                                            {% empty %}
                                             <span class="text-muted">—</span>
-                                            {% endif %}
+                                            {% endfor %}
                                         </td>
                                         <td>
                                             {% if product.brand %}

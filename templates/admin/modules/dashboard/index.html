@@ -148,7 +148,11 @@
                       </div>
                     </td>
                     <td>
-                      <span class="badge bg-primary-subtle text-primary">{{ product.category.name }}</span>
+                      {% for cat in product.categories.all %}
+                      <span class="badge bg-primary-subtle text-primary me-1">{{ cat.name }}</span>
+                      {% empty %}
+                      <span class="text-muted">—</span>
+                      {% endfor %}
                     </td>
                     <td>{{ product.brand.name|default:"-" }}</td>
                     <td>৳{{ product.price|floatformat:2 }}</td>
@@ -246,7 +250,11 @@
                       <span class="badge bg-secondary-subtle text-secondary">{{ variant.sku }}</span>
                     </td>
                     <td>
-                      <span class="badge bg-primary-subtle text-primary">{{ variant.product.category.name }}</span>
+                      {% for cat in variant.product.categories.all %}
+                      <span class="badge bg-primary-subtle text-primary me-1">{{ cat.name }}</span>
+                      {% empty %}
+                      <span class="text-muted">—</span>
+                      {% endfor %}
                     </td>
                     <td>৳{{ variant.price|floatformat:2 }}</td>
                     <td class="text-center">

@@ -10,9 +10,10 @@ djangorestframework = "*"
 django-cors-headers = "*"
 pillow = "*"
 psycopg2-binary = "*"
-python-dotenv = "*"
 djangorestframework-simplejwt = "*"
 django-filter = "*"
+python-decouple = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

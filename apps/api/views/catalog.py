@@ -45,15 +45,15 @@ class ProductListView(StandardResponseMixin, generics.ListAPIView):
             is_active=True,
             authentic=is_authentic
         ).select_related(
-            'category', 'brand'
-        ).prefetch_related('images', 'variants')
+            'brand'
+        ).prefetch_related('images', 'variants', 'categories')
         
         # Category filter - support multiple categories (comma-separated)
         category_param = self.request.query_params.get('category')
         if category_param:
             category_slugs = [slug.strip() for slug in category_param.split(',') if slug.strip()]
             if category_slugs:
-                queryset = queryset.filter(category__slug__in=category_slugs)
+                queryset = queryset.filter(categories__slug__in=category_slugs)
         
         # Brand filter - support multiple brands (comma-separated)
         brand_param = self.request.query_params.get('brand')
@@ -104,8 +104,8 @@ class ProductDetailView(StandardResponseMixin, generics.RetrieveAPIView):
     def get_queryset(self):
         """Get active products with related data"""
         return Product.objects.filter(is_active=True).select_related(
-            'category', 'brand'
-        ).prefetch_related('images', 'variants', 'variants__attributes', 'variants__attributes__attribute_value', 'variants__attributes__attribute_value__attribute_type')
+            'brand'
+        ).prefetch_related('images', 'variants', 'categories', 'variants__attributes', 'variants__attributes__attribute_value', 'variants__attributes__attribute_value__attribute_type')
 
 
 class CategoryListView(StandardResponseMixin, generics.ListAPIView):
@@ -161,7 +161,7 @@ class BrandDetailView(StandardResponseMixin, generics.RetrieveAPIView):
         """Get active brands with active products"""
         return Brand.objects.filter(is_active=True).prefetch_related(
             'products__images',
-            'products__category',
+            'products__categories',
             'products__variants'
         )
 
@@ -195,9 +195,9 @@ class ProductSearchView(generics.GenericAPIView):
             authentic=is_authentic
         ).filter(
             Q(title__icontains=search_query) |
-            Q(category__name__icontains=search_query) |
+            Q(categories__name__icontains=search_query) |
             Q(brand__name__icontains=search_query)
-        ).select_related('category', 'brand').prefetch_related('images').distinct()
+        ).select_related('brand').prefetch_related('images', 'categories').distinct()
         
         serializer = self.get_serializer(queryset, many=True)
         

@@ -44,7 +44,7 @@
                         <div class="card-body bg-light">
                             <h6 class="mb-1">Product: {{ product.title }}</h6>
                             <div class="text-muted small">
-                                Category: {% if product.category %}{{ product.category.name }}{% else %}None{% endif %} | 
+                                Categories: {% for cat in product.categories.all %}{{ cat.name }}{% if not forloop.last %}, {% endif %}{% empty %}None{% endfor %} | 
                                 Brand: {% if product.brand %}{{ product.brand.name }}{% else %}None{% endif %}
                             </div>
                         </div>

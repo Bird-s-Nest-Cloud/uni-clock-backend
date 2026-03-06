@@ -8,11 +8,10 @@ from catalog.models import Product, ProductVariant, ProductImage, Category, Bran
 class CategorySerializer(serializers.ModelSerializer):
     """Serializer for Category model"""
     product_count = serializers.SerializerMethodField()
-    parent_id = serializers.IntegerField(source='parent.id', read_only=True, allow_null=True)
     
     class Meta:
         model = Category
-        fields = ['id', 'name', 'slug', 'description', 'image', 'parent_id', 'product_count']
+        fields = ['id', 'name', 'slug', 'description', 'image', 'product_count']
     
     def get_product_count(self, obj):
         """Get active product count for category"""
@@ -109,7 +108,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     """Serializer for Product List"""
-    category = CategorySerializer(read_only=True)
+    categories = CategorySerializer(many=True, read_only=True)
     brand = BrandSerializer(read_only=True)
     primary_image = serializers.SerializerMethodField()
     min_price = serializers.SerializerMethodField()
@@ -121,7 +120,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'title', 'slug', 'category', 'brand', 'price', 'sale_price',
+            'id', 'title', 'slug', 'categories', 'brand', 'price', 'sale_price',
             'min_price', 'max_price', 'is_on_sale', 'discount_percentage',
             'stock', 'primary_image', 'variant_count', 'authentic'
         ]

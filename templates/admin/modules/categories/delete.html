@@ -49,18 +49,13 @@
                         </div>
 
                         <!-- Show related data warnings -->
-                        {% if has_children or has_products %}
+                        {% if has_products %}
                         <div class="alert alert-danger">
                             <h6 class="alert-heading">
                                 <i class="iconoir-warning-triangle me-1"></i> Related Data Found
                             </h6>
                             <ul class="mb-0">
-                                {% if has_children %}
-                                <li><strong>{{ children_count }}</strong> child categor{{ children_count|pluralize:"y,ies" }} will also be deleted</li>
-                                {% endif %}
-                                {% if has_products %}
                                 <li><strong>{{ products_count }}</strong> product{{ products_count|pluralize }} {{ products_count|pluralize:"is,are" }} associated with this category</li>
-                                {% endif %}
                             </ul>
                         </div>
                         {% endif %}
@@ -70,17 +65,7 @@
                             <table class="table table-sm">
                                 <tbody>
                                     <tr>
-                                        <th width="40%">Parent Category:</th>
-                                        <td>
-                                            {% if category.parent %}
-                                            {{ category.parent.name }}
-                                            {% else %}
-                                            <span class="text-muted">Top Level</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Status:</th>
+                                        <th width="40%">Status:</th>
                                         <td>
                                             {% if category.is_active %}
                                             <span class="badge bg-success">Active</span>
@@ -92,6 +77,10 @@
                                     <tr>
                                         <th>Display Order:</th>
                                         <td>{{ category.display_order }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Products:</th>
+                                        <td>{{ products_count }}</td>
                                     </tr>
                                     <tr>
                                         <th>Created:</th>

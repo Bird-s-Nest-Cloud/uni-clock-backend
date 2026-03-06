@@ -54,13 +54,13 @@
                                                 <td>{{ product.title }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Category:</th>
+                                                <th>Categories:</th>
                                                 <td>
-                                                    {% if product.category %}
-                                                        {{ product.category.name }}
-                                                    {% else %}
-                                                        <span class="text-muted">No category</span>
-                                                    {% endif %}
+                                                    {% for cat in product.categories.all %}
+                                                        <span class="badge bg-info me-1">{{ cat.name }}</span>
+                                                    {% empty %}
+                                                        <span class="text-muted">No categories</span>
+                                                    {% endfor %}
                                                 </td>
                                             </tr>
                                             <tr>

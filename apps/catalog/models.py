@@ -20,19 +20,9 @@ class Category(models.Model):
         help_text='URL-friendly version of name'
     )
 
-    parent = models.ForeignKey(
-        'self',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name='children',
-        verbose_name='Parent Category',
-        help_text='Leave empty for top-level category'
-    )
-
     description = models.TextField(
         blank=True,
-        help_text='Leave empty for top-level category'
+        help_text='Category description'
     )
 
     image = models.ImageField(
@@ -150,13 +140,12 @@ class Product(models.Model):
         related_query_name='products'
     )
 
-    category = models.ForeignKey(
+    categories = models.ManyToManyField(
         Category,
-        on_delete=models.SET_NULL,
         related_name='products',
-        null=True,
         blank=True,
-        related_query_name='products'
+        verbose_name='Categories',
+        help_text='Select one or more categories for this product'
     )
 
     description = models.TextField(

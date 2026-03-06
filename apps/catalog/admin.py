@@ -8,8 +8,8 @@ from .models import (
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'parent', 'is_active', 'display_order', 'created_at']
-    list_filter = ['is_active', 'parent', 'created_at']
+    list_display = ['name', 'is_active', 'display_order', 'created_at']
+    list_filter = ['is_active', 'created_at']
     search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
     ordering = ['display_order', 'name']
@@ -17,7 +17,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'slug', 'parent', 'description')
+            'fields': ('name', 'slug', 'description')
         }),
         ('Media', {
             'fields': ('image',)
@@ -29,7 +29,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
     add_fieldsets = (
         ('Basic Information', {
-            'fields': ('name','slug', 'parent', 'description')
+            'fields': ('name','slug', 'description')
         }),
         ('Media', {
             'fields': ('image',)
@@ -102,17 +102,22 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['title', 'category', 'brand', 'is_active', 'authentic',
+    list_display = ['title', 'get_categories', 'brand', 'is_active', 'authentic',
                     'get_total_stock', 'created_at']
-    list_filter = ['category', 'brand', 'is_active', 'authentic', 'created_at']
+    list_filter = ['categories', 'brand', 'is_active', 'authentic', 'created_at']
     search_fields = ['title', 'description']
     prepopulated_fields = {'slug': ('title',)}
     inlines = [ProductImageInline]
     readonly_fields = ['created_at', 'updated_at']
+    filter_horizontal = ['categories']
+    
+    def get_categories(self, obj):
+        return ", ".join([c.name for c in obj.categories.all()])
+    get_categories.short_description = 'Categories'
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('title', 'slug', 'category', 'brand', 'description')
+            'fields': ('title', 'slug', 'categories', 'brand', 'description')
         }),
         ('Pricing', {
             'fields': ('price', 'sale_price'),
@@ -140,7 +145,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     add_fieldsets = (
         ('Basic Information', {
-            'fields': ('title', 'slug', 'category', 'brand', 'description')
+            'fields': ('title', 'slug', 'categories', 'brand', 'description')
         }),
         ('Pricing', {
             'fields': ('price', 'sale_price'),

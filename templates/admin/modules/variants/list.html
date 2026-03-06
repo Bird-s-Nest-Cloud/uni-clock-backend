@@ -47,7 +47,7 @@
                                 <div class="text-muted">
                                     <span class="me-3">
                                         <i class="iconoir-tag me-1"></i> 
-                                        {% if product.category %}{{ product.category.name }}{% else %}No Category{% endif %}
+                                        {% for cat in product.categories.all %}{{ cat.name }}{% if not forloop.last %}, {% endif %}{% empty %}No Category{% endfor %}
                                     </span>
                                     <span class="me-3">
                                         <i class="iconoir-trademark me-1"></i> 
