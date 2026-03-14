@@ -4,7 +4,7 @@ from .models import (
     Category, Brand, Product, ProductImage, 
     AttributeType, AttributeValue, ProductVariant, VariantAttribute
 )
-from core.models import Banner, FeaturedSection
+from core.models import Banner, FeaturedSection, SiteSettings
 
 
 class CategoryForm(forms.ModelForm):
@@ -620,3 +620,38 @@ class FeaturedSectionForm(forms.ModelForm):
             })
         
         return cleaned_data
+
+
+class SiteSettingsForm(forms.ModelForm):
+    """Form for editing site-wide settings including tracking configuration"""
+
+    class Meta:
+        model = SiteSettings
+        fields = [
+            'site_tracking_code', 'meta_pixel_id',
+            'meta_access_token', 'enable_conversion_api',
+        ]
+        widgets = {
+            'site_tracking_code': forms.Textarea(attrs={
+                'class': 'form-control font-monospace',
+                'rows': 8,
+                'placeholder': 'Paste your Meta Pixel or other tracking script here...',
+            }),
+            'meta_pixel_id': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g. 1234567890',
+            }),
+            'meta_access_token': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'EAAxxxxxxx...',
+            }),
+            'enable_conversion_api': forms.CheckboxInput(attrs={
+                'class': 'form-check-input',
+            }),
+        }
+        help_texts = {
+            'site_tracking_code': 'Admin pastes pixel script here. This will be returned to the frontend.',
+            'meta_pixel_id': 'Used by backend to send Conversion API events.',
+            'meta_access_token': 'Required for Conversion API authentication. Never exposed to frontend.',
+            'enable_conversion_api': 'Allows turning server-side tracking on/off.',
+        }

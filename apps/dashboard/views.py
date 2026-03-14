@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from accounts.models import User
 from catalog.models import Category, Brand, Product, ProductVariant, AttributeType, AttributeValue
 from orders.models import Order
-from core.models import Banner, FeaturedSection
+from core.models import Banner, FeaturedSection, SiteSettings
 
 def admin_required(user):
     return user.is_authenticated and user.is_staff
@@ -1000,9 +1000,39 @@ def order_status_update(request, pk):
             order.notes = notes
         
         order.save()
+
+        if payment_status == 'paid':
+            from core.meta_conversion_api import send_purchase_event_for_order
+
+            send_purchase_event_for_order(order)
+
         return redirect('dashboard:order_detail', pk=pk)
     
     return redirect('dashboard:order_list')
+
+
+# Site Settings View
+@user_passes_test(admin_required)
+def site_settings(request):
+    """Edit site-wide settings including tracking configuration"""
+    from catalog.forms import SiteSettingsForm
+    settings_obj = SiteSettings.load()
+
+    if request.method == 'POST':
+        form = SiteSettingsForm(request.POST, instance=settings_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Site settings updated successfully.')
+            return redirect('dashboard:site_settings')
+    else:
+        form = SiteSettingsForm(instance=settings_obj)
+
+    context = {
+        'title': 'Site Settings',
+        'form': form,
+        'settings_obj': settings_obj,
+    }
+    return render(request, 'admin/modules/settings/site_settings.html', context)
 
 
 # Banner Management Views

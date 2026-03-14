@@ -17,6 +17,7 @@ from api.serializers import (
 )
 from api.utils import success_response, error_response, created_response, not_found_response, bad_request_response
 from api.pagination import LaravelStylePagination
+from core.meta_conversion_api import send_purchase_event_for_order
 
 
 class OrderListView(APIView):
@@ -229,6 +230,9 @@ class CreateOrderView(APIView):
                 # Clear cart
                 cart.items.all().delete()
                 
+                # Fire Meta Conversion API Purchase event (non-blocking)
+                self._send_purchase_event(request, order)
+                
                 # Return order details
                 order_serializer = OrderDetailSerializer(order)
                 return created_response(
@@ -309,6 +313,23 @@ class CreateOrderView(APIView):
             return 60
         else:
             return 120
+
+    def _send_purchase_event(self, request, order):
+        """Send a non-blocking Meta Purchase event for both guest and authenticated users."""
+        send_purchase_event_for_order(
+            order=order,
+            client_ip_address=self._get_client_ip(request),
+            client_user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            fbc=request.COOKIES.get('_fbc'),
+            fbp=request.COOKIES.get('_fbp'),
+        )
+
+    def _get_client_ip(self, request):
+        """Resolve client IP with X-Forwarded-For support."""
+        forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if forwarded_for:
+            return forwarded_for.split(',')[0].strip()
+        return request.META.get('REMOTE_ADDR', '')
 
 
 class CancelOrderView(APIView):

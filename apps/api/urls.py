@@ -40,6 +40,9 @@ from api.views import (
     OrderDetailView,
     CreateOrderView,
     CancelOrderView,
+
+    # Site Settings views
+    SiteSettingsView,
 )
 
 app_name = 'api'
@@ -107,4 +110,10 @@ urlpatterns = [
     path('orders/create/', CreateOrderView.as_view(), name='order-create'),
     path('orders/<str:order_number>/', OrderDetailView.as_view(), name='order-detail'),
     path('orders/<str:order_number>/cancel/', CancelOrderView.as_view(), name='order-cancel'),
+
+    # ============================================================================
+    # SITE SETTINGS
+    # ============================================================================
+
+    path('site-settings/', SiteSettingsView.as_view(), name='site-settings'),
 ]

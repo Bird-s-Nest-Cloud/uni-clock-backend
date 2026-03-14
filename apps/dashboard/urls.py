@@ -74,4 +74,7 @@ urlpatterns = [
     path('featured-sections/<int:pk>/delete/', views.featured_section_delete, name='featured_section_delete'),
     path('featured-sections/<int:pk>/toggle-status/', views.featured_section_toggle_status, name='featured_section_toggle_status'),
     path('featured-sections/<int:pk>/preview/', views.featured_section_preview, name='featured_section_preview'),
+
+    # Site Settings
+    path('settings/', views.site_settings, name='site_settings'),
 ]

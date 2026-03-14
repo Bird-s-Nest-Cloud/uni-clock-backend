@@ -247,3 +247,62 @@ class FeaturedSection(models.Model):
         
         # Limit to max_products
         return queryset[:self.max_products]
+
+
+class SiteSettings(models.Model):
+    """
+    Singleton model for site-wide settings including tracking configuration.
+    Only one instance should exist.
+    """
+    # Tracking Configuration
+    site_tracking_code = models.TextField(
+        blank=True,
+        default='',
+        verbose_name='Site Tracking Code',
+        help_text='Paste your tracking pixel script here (e.g., Meta Pixel base code)'
+    )
+
+    meta_pixel_id = models.CharField(
+        max_length=50,
+        blank=True,
+        default='',
+        verbose_name='Meta Pixel ID',
+        help_text='Used by backend to send Conversion API events'
+    )
+
+    meta_access_token = models.TextField(
+        blank=True,
+        default='',
+        verbose_name='Meta Conversion API Access Token',
+        help_text='Required for Conversion API authentication. Never exposed to frontend.'
+    )
+
+    enable_conversion_api = models.BooleanField(
+        default=False,
+        verbose_name='Enable Conversion API',
+        help_text='Allows turning server-side tracking on/off'
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Last Updated'
+    )
+
+    class Meta:
+        db_table = 'site_settings'
+        verbose_name = 'Site Settings'
+        verbose_name_plural = 'Site Settings'
+
+    def __str__(self):
+        return 'Site Settings'
+
+    def save(self, *args, **kwargs):
+        # Ensure only one instance exists (singleton)
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        """Load the singleton instance, creating it if it doesn't exist."""
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj

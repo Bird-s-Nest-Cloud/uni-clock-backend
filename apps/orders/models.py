@@ -245,3 +245,7 @@ class Payment (models.Model):
         self.order.payment_status = 'paid'
         self.order.save()
 
+        from core.meta_conversion_api import send_purchase_event_for_order
+
+        send_purchase_event_for_order(self.order)
+

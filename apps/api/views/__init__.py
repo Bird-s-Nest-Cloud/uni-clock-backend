@@ -47,6 +47,9 @@ from .order import (
     CancelOrderView,
 )
 
+# Site Settings views
+from .site_settings import SiteSettingsView
+
 __all__ = [
     # Auth
     'RegisterView',
@@ -83,4 +86,7 @@ __all__ = [
     'OrderDetailView',
     'CreateOrderView',
     'CancelOrderView',
+
+    # Site Settings
+    'SiteSettingsView',
 ]

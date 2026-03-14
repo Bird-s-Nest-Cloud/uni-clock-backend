@@ -50,6 +50,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     shipping_address = serializers.SerializerMethodField()
     total_items = serializers.SerializerMethodField()
     payment_method = serializers.SerializerMethodField()
+    meta_event_id = serializers.SerializerMethodField()
     
     class Meta:
         model = Order
@@ -57,7 +58,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             'id', 'order_number', 'status', 'payment_status',
             'billing_address', 'shipping_address', 'guest_email', 'guest_phone', 'items',
             'subtotal', 'discount', 'shipping_cost', 'total_price',
-            'total_items', 'payment_method', 'notes', 'created_at', 'updated_at'
+            'total_items', 'payment_method', 'meta_event_id', 'notes', 'created_at', 'updated_at'
         ]
     
     def get_billing_address(self, obj):
@@ -83,6 +84,9 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         if hasattr(obj, 'payment'):
             return obj.payment.get_method_display()
         return None
+
+    def get_meta_event_id(self, obj):
+        return f'purchase_{obj.order_number}'
 
 
 class GuestAddressSerializer(serializers.Serializer):
