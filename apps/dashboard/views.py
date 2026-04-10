@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Count, Sum, Max, Q
 from django.http import JsonResponse
-
+from django.db import transaction
 from accounts.models import User
 from catalog.models import Category, Brand, Product, ProductVariant, AttributeType, AttributeValue
 from orders.models import Order
@@ -573,7 +573,16 @@ def product_delete(request, pk):
     if request.method == 'POST':
         product_title = product.title
         try:
-            product.delete()
+            from cart.models import CartItem
+
+            with transaction.atomic():
+                # Remove cart rows that would violate cart_item_variant_or_product
+                # when product/variants are deleted.
+                CartItem.objects.filter(
+                    Q(product=product) | Q(variant__product=product)
+                ).delete()
+
+                product.delete()
             messages.success(request, f'Product "{product_title}" deleted successfully!')
             return redirect('dashboard:product_list')
         except Exception as e:
@@ -730,8 +739,19 @@ def variant_delete(request, pk):
     
     if request.method == 'POST':
         sku = variant.sku
-        variant.delete()
-        messages.success(request, f'Variant "{sku}" deleted successfully')
+        try:
+            from cart.models import CartItem
+
+            with transaction.atomic():
+                # Variant-based cart rows would become invalid (both product and variant null)
+                # due to cart_item_variant_or_product constraint, so remove them first.
+                CartItem.objects.filter(variant=variant).delete()
+
+                variant.delete()
+
+            messages.success(request, f'Variant "{sku}" deleted successfully')
+        except Exception as e:
+            messages.error(request, f'Error deleting variant: {str(e)}')
         return redirect('dashboard:variant_list', product_id=product.id)
     
     return render(request, 'admin/modules/variants/delete.html', {
