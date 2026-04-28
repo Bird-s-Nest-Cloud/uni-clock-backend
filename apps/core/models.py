@@ -40,6 +40,22 @@ class Banner(models.Model):
         help_text='Optional mobile-optimized banner image (uses main image if not provided)'
     )
     
+    video = models.FileField(
+        upload_to='banners/videos/%Y/%m/',
+        blank=True,
+        null=True,
+        verbose_name='Banner Video',
+        help_text='Upload a video file for the banner'
+    )
+    
+    video_url = models.URLField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name='Banner Video URL',
+        help_text='Or provide a video URL (e.g. YouTube, Vimeo, or direct link)'
+    )
+    
     link_product = models.ForeignKey(
         Product,
         on_delete=models.SET_NULL,
@@ -306,3 +322,56 @@ class SiteSettings(models.Model):
         """Load the singleton instance, creating it if it doesn't exist."""
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
+
+
+class Page(models.Model):
+    """
+    Model for dynamic static pages (About Us, Terms, etc.)
+    """
+    title = models.CharField(
+        max_length=200,
+        verbose_name='Page Title'
+    )
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+        verbose_name='Slug',
+        help_text='URL-friendly name (e.g. about-us)'
+    )
+    content = models.TextField(
+        verbose_name='Content',
+        help_text='HTML content for the page'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Active Status'
+    )
+    meta_title = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+        verbose_name='Meta Title'
+    )
+    meta_description = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Meta Description'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        db_table = 'pages'
+        verbose_name = 'Page'
+        verbose_name_plural = 'Pages'
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('page-detail', kwargs={'slug': self.slug})

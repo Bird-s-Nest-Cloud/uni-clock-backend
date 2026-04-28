@@ -77,4 +77,10 @@ urlpatterns = [
 
     # Site Settings
     path('settings/', views.site_settings, name='site_settings'),
+
+    # Static Pages
+    path('pages/', views.page_list, name='page_list'),
+    path('pages/add/', views.page_add, name='page_add'),
+    path('pages/<int:pk>/edit/', views.page_edit, name='page_edit'),
+    path('pages/<int:pk>/delete/', views.page_delete, name='page_delete'),
 ]

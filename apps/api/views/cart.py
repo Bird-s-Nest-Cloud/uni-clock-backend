@@ -16,9 +16,10 @@ from api.serializers import (
     UpdateCartItemSerializer,
 )
 from api.utils import success_response, error_response, created_response, not_found_response, bad_request_response
+from api.mixins import CartMixin
 
 
-class CartView(APIView):
+class CartView(CartMixin, APIView):
     """
     GET /api/cart/
     Get current user's cart (or guest cart)
@@ -49,59 +50,9 @@ class CartView(APIView):
             message="Cart retrieved successfully"
         )
     
-    def _get_or_create_cart(self, request):
-        """Get or create cart for user or guest"""
-        if request.user.is_authenticated:
-            # Get or create cart for authenticated user
-            cart, created = Cart.objects.get_or_create(user=request.user)
-            
-            # Merge guest cart if exists
-            session_key = request.session.session_key
-            if session_key:
-                guest_cart = Cart.objects.filter(
-                    session_key=session_key,
-                    user__isnull=True
-                ).first()
-                
-                if guest_cart:
-                    self._merge_carts(guest_cart, cart)
-        else:
-            # Get or create cart for guest using session
-            if not request.session.session_key:
-                request.session.create()
-                request.session.save()  # Save the session to persist it
-            
-            session_key = request.session.session_key
-            cart, created = Cart.objects.get_or_create(
-                session_key=session_key,
-                user__isnull=True
-            )
-        
-        return cart
-    
-    def _merge_carts(self, guest_cart, user_cart):
-        """Merge guest cart into user cart"""
-        with transaction.atomic():
-            for guest_item in guest_cart.items.all():
-                # Check if user cart already has this variant
-                user_item = user_cart.items.filter(
-                    variant=guest_item.variant
-                ).first()
-                
-                if user_item:
-                    # Update quantity (add guest quantity to user quantity)
-                    user_item.quantity += guest_item.quantity
-                    user_item.save()
-                else:
-                    # Move item to user cart
-                    guest_item.cart = user_cart
-                    guest_item.save()
-            
-            # Delete guest cart
-            guest_cart.delete()
 
 
-class AddToCartView(APIView):
+class AddToCartView(CartMixin, APIView):
     """
     POST /api/cart/items/
     Add item to cart
@@ -203,22 +154,6 @@ class AddToCartView(APIView):
             message="Item added to cart successfully"
         )
     
-    def _get_or_create_cart(self, request):
-        """Get or create cart for user or guest"""
-        if request.user.is_authenticated:
-            cart, created = Cart.objects.get_or_create(user=request.user)
-        else:
-            if not request.session.session_key:
-                request.session.create()
-                request.session.save()  # Save the session to persist it
-            
-            session_key = request.session.session_key
-            cart, created = Cart.objects.get_or_create(
-                session_key=session_key,
-                user__isnull=True
-            )
-        
-        return cart
 
 
 class UpdateCartItemView(APIView):

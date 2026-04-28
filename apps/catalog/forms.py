@@ -4,7 +4,7 @@ from .models import (
     Category, Brand, Product, ProductImage, 
     AttributeType, AttributeValue, ProductVariant, VariantAttribute
 )
-from core.models import Banner, FeaturedSection, SiteSettings
+from core.models import Banner, FeaturedSection, SiteSettings, Page
 
 
 class CategoryForm(forms.ModelForm):
@@ -444,8 +444,8 @@ class BannerForm(forms.ModelForm):
     class Meta:
         model = Banner
         fields = [
-            'title', 'subtitle', 'image', 'mobile_image', 'link_product',
-            'button_text', 'display_order', 'is_active', 'authentic', 'start_date', 'end_date'
+            'title', 'subtitle', 'image', 'mobile_image', 'video', 'video_url',
+            'link_product', 'button_text', 'display_order', 'is_active', 'authentic', 'start_date', 'end_date'
         ]
         widgets = {
             'title': forms.TextInput(attrs={
@@ -465,6 +465,14 @@ class BannerForm(forms.ModelForm):
             'mobile_image': forms.FileInput(attrs={
                 'class': 'form-control',
                 'accept': 'image/*'
+            }),
+            'video': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'video/*'
+            }),
+            'video_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter video URL (e.g. direct mp4 link)',
             }),
             'link_product': forms.Select(attrs={
                 'class': 'form-select',
@@ -498,6 +506,8 @@ class BannerForm(forms.ModelForm):
             'subtitle': 'Optional descriptive text or tagline',
             'image': 'Main banner image for desktop view (recommended: 1920x600px)',
             'mobile_image': 'Optional mobile-optimized banner (recommended: 768x600px)',
+            'video': 'Optional: Upload a video file for the banner (mp4 recommended)',
+            'video_url': 'Optional: Direct video link (e.g. .mp4 file URL)',
             'link_product': 'Product to link to when banner is clicked (optional)',
             'button_text': 'Text displayed on the call-to-action button',
             'display_order': 'Lower numbers appear first (0 = highest priority)',
@@ -512,6 +522,8 @@ class BannerForm(forms.ModelForm):
         # Make optional fields not required
         self.fields['subtitle'].required = False
         self.fields['mobile_image'].required = False
+        self.fields['video'].required = False
+        self.fields['video_url'].required = False
         self.fields['link_product'].required = False
         self.fields['start_date'].required = False
         self.fields['end_date'].required = False
@@ -655,3 +667,63 @@ class SiteSettingsForm(forms.ModelForm):
             'meta_access_token': 'Required for Conversion API authentication. Never exposed to frontend.',
             'enable_conversion_api': 'Allows turning server-side tracking on/off.',
         }
+
+
+class PageForm(forms.ModelForm):
+    """Form for creating and updating static pages"""
+    
+    class Meta:
+        model = Page
+        fields = ['title', 'slug', 'content', 'is_active', 'meta_title', 'meta_description']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter page title',
+                'required': True
+            }),
+            'slug': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'URL-friendly slug (e.g. about-us)',
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 15,
+                'placeholder': 'Enter HTML content'
+            }),
+            'is_active': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'meta_title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'SEO Title (optional)',
+            }),
+            'meta_description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'SEO Meta Description (optional)'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['slug'].required = False
+        self.fields['meta_title'].required = False
+        self.fields['meta_description'].required = False
+
+    def clean_slug(self):
+        """Auto-generate slug if not provided"""
+        slug = self.cleaned_data.get('slug')
+        title = self.cleaned_data.get('title')
+        
+        if not slug and title:
+            slug = slugify(title)
+        
+        # Check for duplicate slugs
+        qs = Page.objects.filter(slug=slug)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        
+        if qs.exists():
+            raise forms.ValidationError('A page with this slug already exists.')
+        
+        return slug

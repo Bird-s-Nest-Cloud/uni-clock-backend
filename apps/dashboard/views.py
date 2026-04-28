@@ -1290,3 +1290,89 @@ def featured_section_preview(request, pk):
         'products': products_data,
         'count': len(products_data)
     })
+
+
+# Page Management Views
+@user_passes_test(admin_required)
+def page_list(request):
+    """Display list of all static pages with search"""
+    from core.models import Page
+    pages = Page.objects.all().order_by('title')
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        pages = pages.filter(title__icontains=search_query)
+    
+    context = {
+        'pages': pages,
+        'search_query': search_query,
+    }
+    return render(request, 'admin/modules/pages/list.html', context)
+
+@user_passes_test(admin_required)
+def page_add(request):
+    """Add new static page"""
+    from catalog.forms import PageForm
+    if request.method == 'POST':
+        form = PageForm(request.POST)
+        if form.is_valid():
+            page = form.save()
+            messages.success(request, f'Page "{page.title}" created successfully!')
+            return redirect('dashboard:page_list')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = PageForm()
+    
+    context = {
+        'form': form,
+        'title': 'Add Static Page',
+    }
+    return render(request, 'admin/modules/pages/add.html', context)
+
+@user_passes_test(admin_required)
+def page_edit(request, pk):
+    """Edit existing static page"""
+    from core.models import Page
+    from catalog.forms import PageForm
+    page = get_object_or_404(Page, pk=pk)
+    
+    if request.method == 'POST':
+        form = PageForm(request.POST, instance=page)
+        if form.is_valid():
+            page = form.save()
+            messages.success(request, f'Page "{page.title}" updated successfully!')
+            return redirect('dashboard:page_list')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = PageForm(instance=page)
+    
+    context = {
+        'form': form,
+        'page': page,
+        'title': f'Edit Page: {page.title}',
+    }
+    return render(request, 'admin/modules/pages/edit.html', context)
+
+@user_passes_test(admin_required)
+def page_delete(request, pk):
+    """Delete static page with confirmation"""
+    from core.models import Page
+    page = get_object_or_404(Page, pk=pk)
+    
+    if request.method == 'POST':
+        title = page.title
+        try:
+            page.delete()
+            messages.success(request, f'Page "{title}" deleted successfully!')
+            return redirect('dashboard:page_list')
+        except Exception as e:
+            messages.error(request, f'Error deleting page: {str(e)}')
+            return redirect('dashboard:page_list')
+    
+    context = {
+        'page': page,
+    }
+    return render(request, 'admin/modules/pages/delete.html', context)

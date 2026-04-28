@@ -110,7 +110,14 @@
                                     <tr>
                                         <td>
                                             {% if banner.image %}
-                                            <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="banner-preview">
+                                            <div class="position-relative d-inline-block">
+                                                <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="banner-preview">
+                                                {% if banner.video or banner.video_url %}
+                                                <div class="position-absolute top-0 end-0 bg-dark text-white p-1 rounded-circle m-1" style="opacity: 0.8; font-size: 10px;">
+                                                    <i class="iconoir-video-camera"></i>
+                                                </div>
+                                                {% endif %}
+                                            </div>
                                             {% else %}
                                             <div class="banner-preview bg-light d-flex align-items-center justify-content-center">
                                                 <i class="iconoir-image text-muted"></i>

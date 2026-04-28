@@ -1,0 +1,87 @@
+{% extends 'admin/layouts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <h4 class="page-title mb-0">{{ title }}</h4>
+                    <div class="page-title-right">
+                        <a href="{% url 'dashboard:page_list' %}" class="btn btn-secondary">
+                            <i class="iconoir-arrow-left me-1"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">Title *</label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.title.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.slug.id_for_label }}" class="form-label">Slug</label>
+                                    {{ form.slug }}
+                                    {% if form.slug.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.slug.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="text-muted">Auto-generated from title if left empty</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="{{ form.content.id_for_label }}" class="form-label">Content (HTML Support)</label>
+                                {{ form.content }}
+                                {% if form.content.errors %}
+                                <div class="invalid-feedback d-block">{{ form.content.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">You can use HTML tags here (e.g., &lt;table&gt;, &lt;h2&gt;, etc.)</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active</label>
+                                </div>
+                            </div>
+
+                            <hr>
+                            <h5 class="mb-3">SEO Settings (Optional)</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-12 mb-3">
+                                    <label for="{{ form.meta_title.id_for_label }}" class="form-label">Meta Title</label>
+                                    {{ form.meta_title }}
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="{{ form.meta_description.id_for_label }}" class="form-label">Meta Description</label>
+                                    {{ form.meta_description }}
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'dashboard:page_list' %}" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="iconoir-save-floppy-disk me-1"></i> Save Page
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

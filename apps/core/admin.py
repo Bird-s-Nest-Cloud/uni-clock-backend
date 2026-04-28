@@ -1,10 +1,31 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
-from .models import Banner, FeaturedSection
+from .models import Banner, FeaturedSection, SiteSettings, Page
 
 
 # Register your models here.
+
+
+@admin.register(Page)
+class PageAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slug', 'is_active', 'updated_at')
+    prepopulated_fields = {'slug': ('title',)}
+    search_fields = ('title', 'content')
+    list_filter = ('is_active',)
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'updated_at')
+    readonly_fields = ('updated_at',)
+
+    def has_add_permission(self, request):
+        # Only allow one instance
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Banner)
@@ -43,6 +64,7 @@ class BannerAdmin(admin.ModelAdmin):
         'updated_at',
         'image_preview_large',
         'mobile_image_preview_large',
+        'video_preview',
         'current_status'
     )
     
@@ -54,12 +76,15 @@ class BannerAdmin(admin.ModelAdmin):
                 'button_text'
             )
         }),
-        ('Images', {
+        ('Media Content', {
             'fields': (
                 'image',
                 'image_preview_large',
                 'mobile_image',
-                'mobile_image_preview_large'
+                'mobile_image_preview_large',
+                'video',
+                'video_preview',
+                'video_url'
             )
         }),
         ('Link Configuration', {
@@ -124,6 +149,21 @@ class BannerAdmin(admin.ModelAdmin):
             )
         return 'No mobile image uploaded (will use desktop image)'
     mobile_image_preview_large.short_description = 'Mobile Image Preview'
+    
+    def video_preview(self, obj):
+        """Display video preview in detail view"""
+        if obj.video:
+            return format_html(
+                '<video width="400" controls><source src="{}" type="video/mp4">Your browser does not support the video tag.</video>',
+                obj.video.url
+            )
+        elif obj.video_url:
+            return format_html(
+                '<a href="{0}" target="_blank">{0}</a>',
+                obj.video_url
+            )
+        return 'No video uploaded'
+    video_preview.short_description = 'Video Preview'
     
     def linked_product(self, obj):
         """Display linked product name"""

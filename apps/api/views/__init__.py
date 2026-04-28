@@ -50,6 +50,9 @@ from .order import (
 # Site Settings views
 from .site_settings import SiteSettingsView
 
+# Page views
+from .pages import PageListView, PageDetailView
+
 __all__ = [
     # Auth
     'RegisterView',
@@ -89,4 +92,8 @@ __all__ = [
 
     # Site Settings
     'SiteSettingsView',
+
+    # Pages
+    'PageListView',
+    'PageDetailView',
 ]

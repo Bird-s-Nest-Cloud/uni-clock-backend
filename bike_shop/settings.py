@@ -100,12 +100,12 @@ WSGI_APPLICATION = 'bike_shop.wsgi.application'
 
 # TEMPORARY: Using SQLite for development
 # To switch back to MySQL, comment out the SQLite config and uncomment the MySQL config below
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # MySQL Configuration (Currently Disabled)
 # DATABASES = {
@@ -121,16 +121,16 @@ WSGI_APPLICATION = 'bike_shop.wsgi.application'
 # }
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DATABASE_NAME', default='postgres'),
-        'USER': config('DATABASE_USER', default='postgres'),
-        'PASSWORD': config('DATABASE_PASSWORD', default=''),
-        'HOST': config('DATABASE_HOST', default='localhost'),
-        'PORT': config('DATABASE_PORT', default='5432'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DATABASE_NAME', default='postgres'),
+#         'USER': config('DATABASE_USER', default='postgres'),
+#         'PASSWORD': config('DATABASE_PASSWORD', default=''),
+#         'HOST': config('DATABASE_HOST', default='localhost'),
+#         'PORT': config('DATABASE_PORT', default='5432'),
+#     }
+# }
 
 
 
@@ -182,6 +182,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://192.168.68.107:3000",
+    "http://192.168.68.107:8017"
 ]
 
 # Temporarily allow all origins for debugging (REMOVE in production!)
@@ -211,6 +213,7 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'x-session-id',
 ]
 
 # Session settings for Guest Cart
@@ -231,6 +234,7 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://192.168.68.107:3000",
 ]
 
 

@@ -43,6 +43,10 @@ from api.views import (
 
     # Site Settings views
     SiteSettingsView,
+
+    # Page views
+    PageListView,
+    PageDetailView,
 )
 
 app_name = 'api'
@@ -114,6 +118,10 @@ urlpatterns = [
     # ============================================================================
     # SITE SETTINGS
     # ============================================================================
-
+    # Site Settings
     path('site-settings/', SiteSettingsView.as_view(), name='site-settings'),
+
+    # Pages
+    path('pages/', PageListView.as_view(), name='page-list'),
+    path('pages/<slug:slug>/', PageDetailView.as_view(), name='page-detail'),
 ]
