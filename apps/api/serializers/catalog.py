@@ -182,9 +182,25 @@ class ProductDetailSerializer(ProductListSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     available_attributes = serializers.SerializerMethodField()
+    related_products = serializers.SerializerMethodField()
     
     class Meta(ProductListSerializer.Meta):
-        fields = ProductListSerializer.Meta.fields + ['description', 'weight', 'images', 'variants', 'available_attributes']
+        fields = ProductListSerializer.Meta.fields + ['description', 'weight', 'images', 'variants', 'available_attributes', 'related_products']
+    
+    def get_related_products(self, obj):
+        """Get related products from same categories"""
+        request = self.context.get('request')
+        watch_pref = request.headers.get('X-Watch-Pref', 'authentic') if request else 'authentic'
+        is_authentic = watch_pref != 'replica'
+        
+        # Get up to 4 products from the same categories, excluding current product
+        related = Product.objects.filter(
+            categories__in=obj.categories.all(),
+            is_active=True,
+            authentic=is_authentic
+        ).exclude(id=obj.id).distinct()[:4]
+        
+        return ProductListSerializer(related, many=True, context={'request': request}).data
     
     def get_available_attributes(self, obj):
         """Get all available attribute types and values from all variants"""
