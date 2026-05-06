@@ -156,7 +156,7 @@ class AddToCartView(CartMixin, APIView):
     
 
 
-class UpdateCartItemView(APIView):
+class UpdateCartItemView(CartMixin, APIView):
     """
     PATCH /api/cart/items/{id}/ - Update cart item quantity
     DELETE /api/cart/items/{id}/ - Remove cart item
@@ -219,7 +219,9 @@ class UpdateCartItemView(APIView):
                 cart__user=request.user
             )
         else:
-            session_key = request.session.session_key
+            # Fallback to header if session cookie is blocked
+            session_key = request.headers.get('X-Session-ID') or request.session.session_key
+            
             if not session_key:
                 raise CartItem.DoesNotExist
             

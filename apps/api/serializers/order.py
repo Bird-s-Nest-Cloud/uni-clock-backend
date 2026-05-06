@@ -91,13 +91,13 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 
 class GuestAddressSerializer(serializers.Serializer):
     """Serializer for guest user addresses during checkout"""
-    label = serializers.CharField(max_length=50, default='Guest Address')
-    phone = serializers.CharField(max_length=20)
-    street = serializers.CharField(max_length=255)
-    city = serializers.CharField(max_length=100)
-    state = serializers.CharField(max_length=100)
-    postal_code = serializers.CharField(max_length=20)
-    country = serializers.CharField(max_length=100, default='Bangladesh')
+    label = serializers.CharField(max_length=50, default='Guest Address', required=False, allow_blank=True)
+    phone = serializers.CharField(max_length=20, required=False, allow_blank=True)
+    street = serializers.CharField(max_length=255)  # Mandatory
+    city = serializers.CharField(max_length=100)    # Mandatory
+    state = serializers.CharField(max_length=100)   # Mandatory (Thana)
+    postal_code = serializers.CharField(max_length=20) # Mandatory
+    country = serializers.CharField(max_length=100, default='Bangladesh', required=False, allow_blank=True)
 
 
 class CreateOrderSerializer(serializers.Serializer):
@@ -106,8 +106,8 @@ class CreateOrderSerializer(serializers.Serializer):
     shipping_address_id = serializers.IntegerField(required=False, allow_null=True)
     
     # Guest user fields
-    guest_email = serializers.EmailField(required=False, allow_null=True)
-    guest_phone = serializers.CharField(max_length=20, required=False, allow_null=True)
+    guest_email = serializers.EmailField(required=False, allow_null=True, allow_blank=True)
+    guest_phone = serializers.CharField(max_length=20, required=True) # Make phone required if no email
     guest_billing_address = GuestAddressSerializer(required=False, allow_null=True)
     guest_shipping_address = GuestAddressSerializer(required=False, allow_null=True)
     
